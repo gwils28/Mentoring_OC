@@ -1,0 +1,19 @@
+# Notes mentor OpenClassrooms : contenu réservé aux mentors, jamais publié
+_mentor_notes/
+
+# Données brutes : téléchargées et vérifiées (SHA-256) par le code de chaque projet
+data/raw/
+
+# Python / outils
+.venv/
+__pycache__/
+*.py[oc]
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Système
+.DS_Store
