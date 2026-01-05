@@ -1,0 +1,41 @@
+[project]
+name = "edstats"
+version = "0.1.0"
+description = "Analyse exploratoire des données EdStats (Banque mondiale) pour le projet d'expansion internationale d'academy — corrigé et supports de mentorat OpenClassrooms"
+readme = "README.md"
+authors = [
+    { name = "wilson goma", email = "wilson.goma.pro@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.11.2",
+    "missingno>=0.5.2",
+    "numpy>=2.5.4",
+    "pandas>=3.1.0",
+    "scipy>=1.18.1",
+    "seaborn>=0.13.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.22,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.4",
+    "nbconvert>=7.17.2",
+    "plotly>=7.1.0",
+    "pytest>=9.1.1",
+    "python-pptx>=1.0.2",
+    "ruff>=0.17.2",
+]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
