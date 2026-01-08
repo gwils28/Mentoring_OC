@@ -1,0 +1,13 @@
+etape,lignes_avant,lignes_apres,lignes_supprimees
+Country : suppression des doublons,241,241,0
+Series : suppression des doublons,3665,3665,0
+Country-Series : suppression des doublons,613,613,0
+FootNote : suppression des doublons,643638,643638,0
+Data : suppression des doublons,886930,886930,0
+Country : faux pays,241,216,25
+Data : faux pays (inner join),886930,791640,95290
+Data : familles métier,791640,156816,634824
+Series : familles métier,3665,751,2914
+Country-Series : familles métier,613,613,0
+FootNote : familles métier,518109,233371,284738
+Data → pivot pays × indicateurs,16200,216,15984
