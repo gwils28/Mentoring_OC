@@ -1,0 +1,415 @@
+<title>Carnet EdStats</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@500;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : une colonne de lecture (~70ch) ; les « labos » s'élargissent en deux colonnes, qui s'empilent sur mobile */
+:root {
+  --bg: #f7f9fb; --surface: #ffffff; --surface-2: #eef3f8; --ink: #14212e; --ink-2: #4a5866; --line: #d8e1ea;
+  --accent: #2a78d6; --accent-ink: #1f5fae; --warm: #c4521f; --warm-soft: #fbe3d7; --good: #0f7a3d; --bad: #b42d2d;
+  --code-bg: #e9eff5;
+  --display: "Domine", Georgia, serif; --body: "Nunito Sans", "Segoe UI", Arial, sans-serif; --mono: "JetBrains Mono", "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1923; --surface: #16232f; --surface-2: #1c2d3c; --ink: #e8eef4; --ink-2: #a9b8c6; --line: #2a3d4f;
+  --accent: #5598e7; --accent-ink: #86b6ef; --warm: #ec835a; --warm-soft: #3a2519; --good: #4cc07a; --bad: #ef7b7b;
+  --code-bg: #1f3244; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1923; --surface: #16232f; --surface-2: #1c2d3c; --ink: #e8eef4; --ink-2: #a9b8c6; --line: #2a3d4f;
+  --accent: #5598e7; --accent-ink: #86b6ef; --warm: #ec835a; --warm-soft: #3a2519; --good: #4cc07a; --bad: #ef7b7b;
+  --code-bg: #1f3244; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: flex; flex-direction: column; gap: 64px; }
+h1, h2, h3 { font-family: var(--display); color: var(--ink); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.15rem; }
+p { margin: 0; max-width: 68ch; }
+code, .code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+a { color: var(--accent-ink); }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.lede { font-size: 1.15rem; color: var(--ink-2); }
+section { display: flex; flex-direction: column; gap: 20px; }
+.muted { color: var(--ink-2); }
+button, input, select { font: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête */
+header.hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: end; }
+.brief { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.brief .from { font-size: .85rem; color: var(--ink-2); }
+.brief p { font-size: .98rem; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: .95rem; }
+.facts b { font-family: var(--mono); font-weight: 600; }
+
+/* Étapes */
+.steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.step { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer; color: var(--ink); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.step .n { font-family: var(--mono); font-size: .8rem; color: var(--ink-2); }
+.step .t { font-weight: 700; line-height: 1.25; }
+.step[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step[aria-selected="true"] .n { color: #fff; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; }
+.panel ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+.panel .side { display: flex; flex-direction: column; gap: 14px; }
+.callout { border-radius: 10px; padding: 12px 14px; font-size: .95rem; }
+.callout.trap { background: var(--warm-soft); }
+.callout.ask { background: var(--surface-2); }
+.callout b { display: block; margin-bottom: 2px; }
+
+/* Entonnoir */
+.funnel { display: flex; flex-direction: column; gap: 8px; }
+.frow { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 12px; align-items: center; }
+.frow .v { font-family: var(--mono); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.bar { height: 30px; border-radius: 0 6px 6px 0; background: var(--accent); display: flex; align-items: center; padding-left: 10px; color: #fff; font-size: .88rem; white-space: nowrap; overflow: visible; min-width: 4px; }
+.bar.last { background: var(--warm); }
+.bar span { color: var(--ink); padding-left: 8px; margin-left: 100%; }
+.frow .lab { font-size: .92rem; color: var(--ink-2); }
+
+/* Labos */
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+.lab .controls { display: flex; flex-direction: column; gap: 16px; }
+.lab canvas { width: 100%; height: auto; aspect-ratio: 4 / 3; max-width: 100%; background: var(--surface-2); border-radius: 10px; }
+.slider { display: flex; flex-direction: column; gap: 4px; }
+.slider label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size: .95rem; }
+.slider output { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.coefs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.coef { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+.coef .k { font-size: .82rem; color: var(--ink-2); }
+.coef .val { font-family: var(--mono); font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+.toggle button { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.verdict { font-size: .95rem; }
+
+/* Classement */
+table.rank { width: 100%; border-collapse: collapse; font-size: .93rem; }
+table.rank th, table.rank td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+table.rank th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
+table.rank td.num { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.chip.in { background: var(--accent); color: #fff; }
+.chip.new { background: var(--warm); color: #fff; }
+.table-scroll { overflow-x: auto; }
+.reset { align-self: flex-start; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+
+/* Quiz */
+.quiz { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.q .opts { display: flex; flex-direction: column; gap: 6px; }
+.q button.opt { text-align: left; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.q button.opt.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--surface)); }
+.q button.opt.ko { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--surface)); }
+.q .why { font-size: .95rem; color: var(--ink-2); }
+.score { font-family: var(--mono); font-weight: 600; }
+
+/* Check-list */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.checklist label { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+.checklist input { margin-top: .3em; accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
+footer { font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 760px) {
+  header.hero, .panel, .lab { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .frow { grid-template-columns: 4.2rem minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) { .bar { transition: width .4s ease; } }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <span class="eyebrow">OpenClassrooms · Data Engineer · Projet 1</span>
+    <h1>Analysez les données de systèmes éducatifs</h1>
+    <p class="lede">Votre carnet de bord pour le projet : les étapes, les pièges, deux petits labos pour manipuler les notions, et un quiz pour vérifier que vous êtes prêt pour la séance bilan.</p>
+    <div class="facts">
+      <span><b>5</b> fichiers CSV</span><span><b>886 930</b> lignes dans Data</span><span><b>3 665</b> indicateurs</span><span><b>~60 h</b> de travail</span>
+    </div>
+  </div>
+  <aside class="brief" aria-label="La demande du manager">
+    <span class="from">Message de Mark, votre manager chez academy</span>
+    <p>« On veut lancer academy, nos cours en ligne pour lycéens et étudiants, à l'international. Est-ce que les données éducatives de la Banque mondiale peuvent nous aider à choisir les pays ? Lesquels ont le plus de potentiel, et comment ce potentiel va-t-il évoluer ? »</p>
+    <p class="muted" style="font-size:.9rem">Livrables : un notebook Jupyter, une présentation, un <code>pyproject.toml</code> (uv).</p>
+  </aside>
+</header>
+
+<section id="etapes" aria-labelledby="t-etapes">
+  <span class="eyebrow">Le parcours de la donnée</span>
+  <h2 id="t-etapes">Cinq étapes, dans cet ordre</h2>
+  <div class="steps" role="tablist" aria-label="Étapes du projet" id="steps"></div>
+  <div class="panel" role="tabpanel" id="panel" aria-live="polite"></div>
+</section>
+
+<section id="entonnoir" aria-labelledby="t-entonnoir">
+  <span class="eyebrow">Réduire le périmètre</span>
+  <h2 id="t-entonnoir">De 3 665 indicateurs à 5, en filtrant</h2>
+  <p class="muted">Chaque filtre est chiffré, et c'est ce qui rend la démarche défendable. Les barres sont à l'échelle logarithmique : sinon, les dernières étapes seraient invisibles.</p>
+  <div class="funnel" id="funnel"></div>
+</section>
+
+<section id="labo-correlation" aria-labelledby="t-corr">
+  <span class="eyebrow">Labo 1 · corrélations</span>
+  <h2 id="t-corr">Pearson ou Spearman ? Déplacez le pays extrême</h2>
+  <div class="lab">
+    <canvas id="scatter" width="640" height="480" role="img" aria-label="Nuage de points de 30 pays fictifs ; le point orange est un pays extrême dont vous réglez la valeur"></canvas>
+    <div class="controls">
+      <p>30 pays fictifs, dont un pays extrême (en orange) : le curseur règle sa valeur sur l'axe vertical. Observez quel coefficient « tient le choc ».</p>
+      <div class="toggle" role="group" aria-label="Forme de la relation">
+        <button type="button" id="rel-lin" aria-pressed="true">Relation en ligne droite</button>
+        <button type="button" id="rel-exp" aria-pressed="false">Relation courbe</button>
+      </div>
+      <div class="slider">
+        <label for="outlier">Valeur du pays extrême <output id="outlier-out">0</output></label>
+        <input type="range" id="outlier" min="-80" max="200" value="0" step="1">
+      </div>
+      <div class="coefs">
+        <div class="coef"><div class="k">Pearson (valeurs)</div><div class="val" id="r-p">–</div></div>
+        <div class="coef"><div class="k">Spearman (rangs)</div><div class="val" id="r-s">–</div></div>
+      </div>
+      <p class="verdict" id="verdict"></p>
+    </div>
+  </div>
+</section>
+
+<section id="labo-score" aria-labelledby="t-score">
+  <span class="eyebrow">Labo 2 · score pays (vraies données du corrigé)</span>
+  <h2 id="t-score">Changez les poids, regardez le top 10 bouger</h2>
+  <p class="muted">161 pays, 3 critères convertis en rangs (0 = dernier pays, 1 = premier). Les poids du corrigé sont 50 / 30 / 20. Les pays marqués <span class="chip new">nouveau</span> n'étaient pas dans le top 10 du corrigé.</p>
+  <div class="lab">
+    <div class="controls">
+      <div class="slider"><label for="w1">Marché connecté (15-24 ans × % internautes) <output id="w1-out"></output></label><input type="range" id="w1" min="0" max="100" value="50"></div>
+      <div class="slider"><label for="w2">Maturité numérique (% internautes) <output id="w2-out"></output></label><input type="range" id="w2" min="0" max="100" value="30"></div>
+      <div class="slider"><label for="w3">Dynamique (croissance de la cible 2015-2030) <output id="w3-out"></output></label><input type="range" id="w3" min="0" max="100" value="20"></div>
+      <button type="button" class="reset" id="reset">Revenir aux poids du corrigé</button>
+      <p class="verdict" id="score-note"></p>
+    </div>
+    <div class="table-scroll">
+      <table class="rank" aria-label="Top 10 des pays selon les poids choisis">
+        <thead><tr><th>#</th><th>Pays</th><th style="text-align:right">Connectés (M)</th><th style="text-align:right">Internet</th><th style="text-align:right">2030</th></tr></thead>
+        <tbody id="rank-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="quiz" aria-labelledby="t-quiz">
+  <span class="eyebrow">Avant la séance bilan</span>
+  <h2 id="t-quiz">Quiz : êtes-vous prêt à défendre votre travail ?</h2>
+  <p class="muted">Ce sont le type de questions que votre mentor vous posera. Score : <span class="score" id="quiz-score">0 / 0</span></p>
+  <div class="quiz" id="quiz-list"></div>
+</section>
+
+<section id="checklist" aria-labelledby="t-check">
+  <span class="eyebrow">Avant de déposer</span>
+  <h2 id="t-check">Check-list des livrables</h2>
+  <p class="muted">Vos coches sont gardées dans ce navigateur uniquement.</p>
+  <div class="checklist" id="check-list"></div>
+</section>
+
+<footer>
+  Supports de mentorat : notebook corrigé, fiches pédagogiques et kit mentor dans le dépôt <a href="https://github.com/gwils28/Mentoring_OC" target="_blank" rel="noopener">gwils28/Mentoring_OC</a>. Données : EdStats, Banque mondiale (fichier fourni par OpenClassrooms).
+</footer>
+</div>
+
+<script>
+const PAYS = [["GBR","United Kingdom",6.96,87.5,21.0,0.9503,0.9503,0.4596],["FRA","France",6.17,81.4,20.0,0.9255,0.9006,0.4534],["USA","United States",32.47,71.7,8.0,0.9938,0.8199,0.3043],["RUS","Russia",11.33,63.8,14.0,0.9752,0.764,0.4037],["ESP","Spain",3.09,69.8,32.0,0.8385,0.7888,0.6087],["DEU","Germany",7.5,82.3,-7.0,0.9565,0.9193,0.118],["JPN","Japan",9.82,79.5,-6.0,0.9689,0.8882,0.1242],["MAR","Morocco",3.48,55.4,42.0,0.8571,0.6894,0.677],["MEX","Mexico",8.02,39.8,31.0,0.9627,0.528,0.6025],["SAU","Saudi Arabia",2.77,54.0,50.0,0.8261,0.6522,0.7329],["CAN","Canada",3.72,83.0,-0.0,0.8696,0.9255,0.1801],["AUS","Australia",2.32,79.5,14.0,0.8075,0.882,0.3975],["BRA","Brazil",16.25,48.6,10.0,0.9814,0.6149,0.3354],["TUR","Turkey",6.22,45.1,24.0,0.9317,0.5839,0.4907],["KOR","Korea",5.54,84.1,-29.0,0.913,0.9317,0.0062],["ARG","Argentina",3.84,55.8,17.0,0.8758,0.7019,0.441],["COL","Colombia",4.37,49.0,23.0,0.9006,0.6211,0.4783],["MYS","Malaysia",3.21,61.0,15.0,0.8509,0.7329,0.4161],["NLD","Netherlands",1.84,91.7,2.0,0.7826,0.9689,0.2236],["ISR","Israel",0.81,70.3,50.0,0.677,0.8012,0.7391],["NGA","Nigeria",5.53,16.1,98.0,0.9068,0.323,0.8634],["ARE","United Arab Emirates",0.6,85.0,39.0,0.6149,0.9379,0.6646],["PHL","Philippines",6.78,36.2,26.0,0.9441,0.4783,0.5217],["SWE","Sweden",1.12,92.8,2.0,0.7453,0.9876,0.2174],["CHN","China",89.56,42.3,2.0,1.0,0.5528,0.2298],["ZAF","South Africa",4.05,41.0,24.0,0.8882,0.5404,0.5031],["BEL","Belgium",1.03,81.6,11.0,0.7267,0.9068,0.3478],["ITA","Italy",3.21,55.6,12.0,0.8447,0.6957,0.3665],["VEN","Venezuela",2.67,49.1,27.0,0.8199,0.6273,0.528],["IND","India",30.16,12.6,33.0,0.9876,0.2547,0.6211],["EGY","Egypt",4.06,26.4,33.0,0.8944,0.4037,0.6273],["KAZ","Kazakhstan",1.45,53.3,31.0,0.764,0.646,0.5901],["VNM","Vietnam",6.63,36.8,12.0,0.9379,0.4845,0.3727],["SDN","Sudan",1.84,21.0,97.0,0.7888,0.3665,0.8571],["NOR","Norway",0.61,94.6,7.0,0.6211,0.9938,0.2733],["IRL","Ireland",0.45,76.9,34.0,0.5404,0.8696,0.6398],["DNK","Denmark",0.64,92.3,2.0,0.6335,0.9814,0.236],["POL","Poland",3.08,62.3,-15.0,0.8323,0.7578,0.0745],["IDN","Indonesia",6.09,14.5,28.0,0.9193,0.3043,0.5342],["CHE","Switzerland",0.82,85.2,-5.0,0.6894,0.9441,0.1429],["IRN","Iran",3.54,22.7,25.0,0.8634,0.3851,0.5155],["UGA","Uganda",1.06,14.1,161.0,0.7329,0.2919,0.9752],["CZE","Czech Republic",0.87,73.4,1.0,0.7019,0.8509,0.1925],["PAK","Pakistan",3.91,10.0,49.0,0.882,0.1925,0.7205],["AZE","Azerbaijan",0.94,54.2,15.0,0.7205,0.6584,0.4099],["SYR","Syrian Arab Republic",1.08,24.3,47.0,0.7391,0.3975,0.7081],["PRT","Portugal",0.7,60.3,17.0,0.646,0.7205,0.4472],["NZL","New Zealand",0.51,81.6,10.0,0.5776,0.913,0.3292],["FIN","Finland",0.58,88.7,0.0,0.6025,0.9627,0.1863],["KWT","Kuwait",0.31,70.4,77.0,0.4534,0.8075,0.7888],["CHL","Chile",1.61,55.0,-2.0,0.7702,0.677,0.1739],["AUT","Austria",0.8,80.0,-10.0,0.6646,0.8944,0.1056],["DOM","Dominican Republic",0.8,42.3,30.0,0.6708,0.559,0.5776],["PER","Peru",2.17,38.2,9.0,0.8012,0.5155,0.3106],["HUN","Hungary",0.85,70.6,-10.0,0.6957,0.8137,0.0994],["ECU","Ecuador",0.92,35.1,29.0,0.7143,0.4596,0.559],["TUN","Tunisia",0.81,41.4,24.0,0.6832,0.5466,0.4969],["GRC","Greece",0.63,55.1,15.0,0.6273,0.6832,0.4224],["DZA","Algeria",1.27,18.2,29.0,0.7578,0.3416,0.5466],["THA","Thailand",2.5,26.5,8.0,0.8137,0.4099,0.2981],["PSE","West Bank and Gaza",0.41,43.4,57.0,0.528,0.5776,0.7453],["KEN","Kenya",0.89,10.5,90.0,0.7081,0.205,0.8385],["BOL","Bolivia",0.72,34.6,32.0,0.6522,0.441,0.6149],["BHR","Bahrain",0.11,88.0,71.0,0.2795,0.9565,0.7702],["ROU","Romania",1.19,45.9,-6.0,0.7516,0.5901,0.1366],["HKG","Hong Kong SAR, China",0.64,72.9,-20.0,0.6398,0.8385,0.0311],["UKR","Ukraine",2.03,35.3,-3.0,0.795,0.4658,0.1677],["SVK","Slovak Republic",0.55,76.7,-12.0,0.5839,0.8634,0.087],["JOR","Jordan",0.48,37.0,39.0,0.559,0.4969,0.6584],["LBN","Lebanon",0.47,61.2,2.0,0.5466,0.7391,0.2422],["GTM","Guatemala",0.49,16.0,82.0,0.5714,0.3168,0.8075],["QAT","Qatar",0.08,69.3,99.0,0.2547,0.7826,0.8758],["BGD","Bangladesh",1.69,5.0,29.0,0.7764,0.1273,0.5528],["SGP","Singapore",0.49,72.0,-26.0,0.5652,0.8323,0.0124],["NPL","Nepal",0.72,11.1,38.0,0.6584,0.236,0.6522],["BLR","Belarus",0.59,46.9,-4.0,0.6087,0.6087,0.1615],["ZMB","Zambia",0.38,13.5,114.0,0.5031,0.2733,0.9193],["GHA","Ghana",0.56,10.6,76.0,0.5901,0.2174,0.7826],["CRI","Costa Rica",0.4,46.0,13.0,0.5155,0.6025,0.3851],["PRY","Paraguay",0.39,29.3,38.0,0.5093,0.4161,0.646],["BGR","Bulgaria",0.43,51.9,1.0,0.5342,0.6335,0.1988],["URY","Uruguay",0.28,54.5,13.0,0.4286,0.6646,0.3913],["IRQ","Iraq",0.48,7.1,90.0,0.5528,0.1615,0.8323],["PAN","Panama",0.26,42.7,30.0,0.4037,0.5652,0.5839],["LUX","Luxembourg",0.06,91.9,22.0,0.1988,0.9752,0.472],["HRV","Croatia",0.33,61.9,-12.0,0.4845,0.7516,0.0807],["ETH","Ethiopia",0.57,2.9,77.0,0.5963,0.0683,0.795],["SEN","Senegal",0.31,10.8,116.0,0.4472,0.2298,0.9255],["EST","Estonia",0.13,78.4,10.0,0.2919,0.8758,0.3168],["TZA","Tanzania",0.36,4.0,172.0,0.4907,0.0932,0.9814],["HND","Honduras",0.3,17.8,49.0,0.441,0.3354,0.7267],["LTU","Lithuania",0.32,67.2,-20.0,0.4596,0.7702,0.0248],["LVA","Latvia",0.21,73.1,-4.0,0.3602,0.8447,0.1553],["CMR","Cameroon",0.32,7.5,93.0,0.4658,0.1739,0.8447],["ISL","Iceland",0.04,96.2,12.0,0.1553,1.0,0.3789],["SVN","Slovenia",0.15,70.0,7.0,0.3106,0.795,0.2857],["ALB","Albania",0.32,54.7,-17.0,0.4783,0.6708,0.0435],["TTO","Trinidad and Tobago",0.13,59.5,16.0,0.2981,0.7143,0.4286],["MOZ","Mozambique",0.29,6.0,129.0,0.4348,0.1429,0.9379],["RWA","Rwanda",0.19,8.0,173.0,0.3416,0.1801,0.9876],["BIH","Bosnia and Herzegovina",0.27,52.8,-20.0,0.4099,0.6398,0.0373],["ZWE","Zimbabwe",0.41,12.0,11.0,0.5217,0.2422,0.3416],["BHS","The Bahamas",0.04,71.7,11.0,0.1491,0.8261,0.354],["HTI","Haiti",0.21,9.8,58.0,0.3665,0.1863,0.7516],["MKD","Macedonia",0.17,57.4,-16.0,0.323,0.7081,0.0683],["JAM","Jamaica",0.2,37.1,7.0,0.354,0.5031,0.2795],["MDA","Moldova",0.27,43.4,-23.0,0.4161,0.5714,0.0186],["CIV","Côte d'Ivoire",0.23,5.0,74.0,0.3789,0.1273,0.7764],["COD","Dem. Rep. Congo",0.24,1.7,102.0,0.3851,0.0248,0.882],["NIC","Nicaragua",0.17,13.5,34.0,0.3292,0.2795,0.6335],["MWI","Malawi",0.15,4.4,137.0,0.3043,0.1056,0.9503],["SLV","El Salvador",0.28,20.3,7.0,0.4224,0.354,0.2671],["GAB","Gabon",0.07,24.0,44.0,0.2236,0.3913,0.6957],["CYP","Cyprus",0.08,60.7,-10.0,0.236,0.7267,0.1118],["BEN","Benin",0.09,4.5,141.0,0.2671,0.1118,0.9565],["CUB","Cuba",0.32,21.2,-17.0,0.472,0.3727,0.0497],["BFA","Burkina Faso",0.13,3.7,120.0,0.2857,0.087,0.9317],["GEO","Georgia",0.24,36.9,-17.0,0.3913,0.4907,0.0559],["MAC","Macao SAR, China",0.05,61.3,1.0,0.1677,0.7453,0.205],["ARM","Armenia",0.2,37.5,-10.0,0.3478,0.5093,0.0932],["MLI","Mali",0.08,2.8,185.0,0.2484,0.0559,1.0],["TJK","Tajikistan",0.24,14.5,5.0,0.3975,0.2981,0.2609],["KGZ","Kyrgyz Republic",0.23,19.8,3.0,0.3727,0.3478,0.2484],["MMR","Myanmar",0.36,4.0,8.0,0.4969,0.0994,0.2919],["GMB","The Gambia",0.05,12.4,99.0,0.1739,0.2484,0.8696],["MUS","Mauritius",0.07,35.4,12.0,0.2298,0.472,0.3602],["MLT","Malta",0.04,68.2,-6.0,0.1366,0.7764,0.1304],["MDG","Madagascar",0.1,2.3,103.0,0.2733,0.0373,0.8944],["NAM","Namibia",0.07,12.9,43.0,0.2174,0.2671,0.6894],["ABW","Aruba",0.01,74.0,3.0,0.0373,0.8571,0.2547],["MNG","Mongolia",0.09,16.4,24.0,0.2609,0.3292,0.4845],["SWZ","Swaziland",0.06,20.8,30.0,0.205,0.3602,0.5652],["COG","Congo",0.05,6.1,103.0,0.1925,0.1491,0.8882],["LAO","Lao PDR",0.16,10.7,21.0,0.3168,0.2236,0.4658],["KHM","Cambodia",0.18,4.9,30.0,0.3354,0.118,0.5714],["CPV","Cabo Verde",0.04,34.7,24.0,0.1429,0.4534,0.5093],["SUR","Suriname",0.03,34.7,31.0,0.1056,0.4472,0.5963],["BLZ","Belize",0.02,31.0,40.0,0.0745,0.4348,0.6708],["GIN","Guinea",0.06,3.1,95.0,0.2112,0.0807,0.8509],["MDV","Maldives",0.03,38.9,16.0,0.1118,0.5217,0.4348],["TCD","Chad",0.05,2.1,144.0,0.1863,0.0311,0.9627],["LSO","Lesotho",0.05,10.0,42.0,0.1801,0.1988,0.6832],["NER","Niger",0.04,1.4,175.0,0.1615,0.0124,0.9938],["GNQ","Equatorial Guinea",0.02,13.9,86.0,0.0621,0.2857,0.8137],["TON","Tonga",0.01,30.0,48.0,0.0186,0.4224,0.7143],["STP","São Tomé and Principe",0.01,21.6,64.0,0.0248,0.3789,0.7578],["BTN","Bhutan",0.02,15.6,44.0,0.087,0.3106,0.7019],["LCA","St. Lucia",0.01,45.9,10.0,0.0559,0.5963,0.323],["SLE","Sierra Leone",0.03,2.5,111.0,0.1242,0.0435,0.913],["COM","Comoros",0.01,6.0,132.0,0.0497,0.1366,0.9441],["LBR","Liberia",0.02,2.6,160.0,0.0807,0.0497,0.9689],["TLS","Timor-Leste",0.02,7.0,88.0,0.0683,0.1553,0.8261],["CAF","Central African Republic",0.03,3.0,88.0,0.118,0.0745,0.8199],["SOM","Somalia",0.03,1.4,110.0,0.0994,0.0186,0.9068],["VUT","Vanuatu",0.01,10.6,77.0,0.0124,0.2112,0.8012],["GNB","Guinea-Bissau",0.01,2.9,104.0,0.0435,0.0621,0.9006],["VCT","St. Vincent and the Grenadines",0.01,40.0,2.0,0.0311,0.5342,0.2112],["GUY","Guyana",0.04,30.5,-16.0,0.1304,0.4286,0.0621],["BDI","Burundi",0.02,1.2,66.0,0.0932,0.0062,0.764],["TKM","Turkmenistan",0.08,7.2,-5.0,0.2422,0.1677,0.1491],["WSM","Samoa",0.01,12.9,29.0,0.0062,0.2609,0.5404]]; // [code, nom, connectés (M), % internet, croissance %, rang1, rang2, rang3]
+
+// ---------------------------------------------------------------- étapes
+const ETAPES = [
+  { t: "Charger et décrire", faire: ["Charger les 5 CSV avec <code>pd.read_csv</code>", "Pour chaque fichier, dire ce que représente <b>une ligne</b>", "<code>shape</code>, <code>info()</code>, <code>describe()</code>, <code>value_counts()</code>"],
+    piege: "Croire qu'une ligne de Data = un pays. C'est un pays × un indicateur : vérifiez-le avec <code>duplicated(subset=[...])</code>.",
+    mentor: "« Combien de lignes pour la France dans Data ? Pourquoi autant ? »", fiche: "01_maille_et_qualite.ipynb" },
+  { t: "Nettoyer", faire: ["Compter et supprimer les doublons", "Mesurer les valeurs manquantes par colonne", "Retirer les 25 « faux pays » (Monde, zones, groupes de revenu) : par liste avec <code>~isin()</code> puis par <code>merge(how=\"inner\")</code>"],
+    piege: "Gibraltar et Nauru n'ont pas de région, mais ce sont de vrais territoires. Une règle de nettoyage se vérifie sur ses exceptions.",
+    mentor: "« Liste ou jointure : pourquoi n'obtiens-tu pas le même nombre de pays ? »", fiche: "01_maille_et_qualite.ipynb" },
+  { t: "Réduire", faire: ["Garder les familles d'indicateurs (<code>Topic</code>) utiles à academy", "Choisir les années : 2010-2014 sont récentes et remplies", "Taux de remplissage avec <code>groupby</code>, puis une quinzaine d'indicateurs", "<code>pivot_table</code> : une ligne = un pays"],
+    piege: "Mélanger des projections (2020-2100) avec des observations dans une même moyenne.",
+    mentor: "« Pourquoi agréger les années ? Moyenne ou médiane ? Sur combien d'années au minimum ? »", fiche: "02_filtrer_agreger.ipynb" },
+  { t: "Analyser", faire: ["Matrices de corrélation de Pearson <b>et</b> de Spearman, en heatmap", "Retirer les indicateurs redondants (|r| ≥ 0,7)", "Une fonction <code>describe</code> + histogramme, appliquée dans une boucle <code>for</code>"],
+    piege: "Lire la moyenne d'une distribution très asymétrique (population, PIB) comme celle d'un « pays typique ».",
+    mentor: "« Explique chaque ligne de describe(). Que veut dire count ? »", fiche: "03_correlations.ipynb · 04_distributions.ipynb" },
+  { t: "Recommander", faire: ["Une méthode chiffrée pour choisir des pays (top communs, score pondéré)", "Une présentation pour Mark, qui n'est pas technicien", "<code>uv init</code>, <code>uv add</code>, <code>pyproject.toml</code>"],
+    piege: "Additionner des critères d'unités différentes, ou conclure à une causalité.",
+    mentor: "« Si je change tes poids, ta recommandation tient-elle ? »", fiche: "05_scorer_des_pays.ipynb" },
+];
+const stepsEl = document.getElementById("steps"), panelEl = document.getElementById("panel");
+function showStep(i) {
+  [...stepsEl.children].forEach((b, j) => { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
+  const e = ETAPES[i];
+  panelEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;min-width:0"><h3>${e.t}</h3><ul>${e.faire.map(f => `<li>${f}</li>`).join("")}</ul>
+    <p class="muted" style="font-size:.92rem">Fiche à dérouler : <code>pedagogie/${e.fiche}</code></p></div>
+    <div class="side"><div class="callout trap"><b>Piège classique</b>${e.piege}</div><div class="callout ask"><b>Votre mentor demandera</b>${e.mentor}</div></div>`;
+}
+ETAPES.forEach((e, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "step"; b.setAttribute("role", "tab");
+  b.innerHTML = `<span class="n">étape ${i + 1}</span><span class="t">${e.t}</span>`;
+  b.addEventListener("click", () => showStep(i));
+  b.addEventListener("keydown", ev => {
+    if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+      const j = (i + (ev.key === "ArrowRight" ? 1 : ETAPES.length - 1)) % ETAPES.length;
+      showStep(j); stepsEl.children[j].focus();
+    }
+  });
+  stepsEl.appendChild(b);
+});
+showStep(0);
+
+// ---------------------------------------------------------------- entonnoir
+const FUNNEL = [[3665, "indicateurs bruts"], [751, "familles utiles au métier"], [314, "renseignés à ≥ 60 % (2010-2014)"], [15, "retenus pour leur sens métier"], [5, "non redondants"]];
+const maxLog = Math.log10(3665);
+document.getElementById("funnel").innerHTML = FUNNEL.map(([v, l], i) =>
+  `<div class="frow"><span class="v">${v.toLocaleString("fr-FR")}</span>
+   <div><div class="bar${i === FUNNEL.length - 1 ? " last" : ""}" style="width:${Math.max(6, Math.log10(v) / maxLog * 100)}%">${l}</div></div></div>`).join("");
+
+// ---------------------------------------------------------------- labo corrélation
+function rand(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const r = rand(7), N = 30;
+const xs = Array.from({ length: N }, (_, i) => 1 + i * 9 / (N - 1));
+const noise = xs.map(() => (r() - 0.5) * 3);
+let mode = "lin";
+function ys(extreme) {
+  const base = xs.map((x, i) => (mode === "lin" ? 2 * x : Math.exp(x / 1.6)) + noise[i] * (mode === "lin" ? 1 : 2));
+  base[N - 1] = extreme;
+  return base;
+}
+function pearson(a, b) {
+  const n = a.length, ma = a.reduce((s, v) => s + v, 0) / n, mb = b.reduce((s, v) => s + v, 0) / n;
+  let num = 0, da = 0, db = 0;
+  for (let i = 0; i < n; i++) { num += (a[i] - ma) * (b[i] - mb); da += (a[i] - ma) ** 2; db += (b[i] - mb) ** 2; }
+  return num / Math.sqrt(da * db);
+}
+function ranks(a) {
+  const idx = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]), out = new Array(a.length);
+  for (let i = 0; i < idx.length;) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+    for (let k = i; k <= j; k++) out[idx[k][1]] = (i + j) / 2 + 1; i = j + 1; }
+  return out;
+}
+const canvas = document.getElementById("scatter"), ctx = canvas.getContext("2d"), slider = document.getElementById("outlier");
+function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function drawLab() {
+  const ext = +slider.value, y = ys(ext);
+  document.getElementById("outlier-out").textContent = ext;
+  const rp = pearson(xs, y), rs = pearson(ranks(xs), ranks(y));
+  document.getElementById("r-p").textContent = rp.toFixed(2).replace(".", ",");
+  document.getElementById("r-s").textContent = rs.toFixed(2).replace(".", ",");
+  const gap = Math.abs(rp - rs);
+  document.getElementById("verdict").textContent = gap < 0.05
+    ? "Les deux coefficients sont d'accord : la relation est monotone et aucun point n'écrase les autres."
+    : rp < rs ? `Pearson décroche de ${gap.toFixed(2).replace(".", ",")} : un seul pays, ou une courbe, suffit à le faire baisser. Spearman, qui regarde l'ordre, résiste.`
+              : `Pearson est gonflé de ${gap.toFixed(2).replace(".", ",")} : un pays extrême aligné avec la tendance « tire » la droite.`;
+  const W = canvas.width, H = canvas.height, pad = 44;
+  const lo = Math.min(...y), hi = Math.max(...y), m = (hi - lo) * 0.08 || 1, ymin = lo - m, ymax = hi + m;
+  const sx = x => pad + (x - 1) / 9 * (W - 2 * pad), sy = v => H - pad - (v - ymin) / (ymax - ymin) * (H - 2 * pad);
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.fillStyle = css("--ink-2"); ctx.font = "13px " + css("--body");
+  [lo, hi].forEach(v => { ctx.beginPath(); ctx.moveTo(pad, sy(v)); ctx.lineTo(W - pad, sy(v)); ctx.stroke(); ctx.fillText(Math.round(v), 6, sy(v) + 4); });
+  ctx.fillText("indicateur x", W - pad - 80, H - 14);
+  for (let i = 0; i < N; i++) {
+    const last = i === N - 1;
+    ctx.beginPath(); ctx.arc(sx(xs[i]), sy(y[i]), last ? 9 : 6, 0, 2 * Math.PI);
+    ctx.fillStyle = last ? css("--warm") : css("--accent"); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = css("--surface-2"); ctx.stroke();
+  }
+}
+function setMode(m) {
+  mode = m;
+  document.getElementById("rel-lin").setAttribute("aria-pressed", m === "lin");
+  document.getElementById("rel-exp").setAttribute("aria-pressed", m === "exp");
+  const top = ys(0)[N - 2];
+  slider.min = Math.round(-top * 2); slider.max = Math.round(top * 4);
+  slider.value = Math.round(top * 1.05); drawLab();
+}
+document.getElementById("rel-lin").addEventListener("click", () => setMode("lin"));
+document.getElementById("rel-exp").addEventListener("click", () => setMode("exp"));
+slider.addEventListener("input", drawLab);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawLab);
+new MutationObserver(drawLab).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+setMode("lin");
+
+// ---------------------------------------------------------------- labo score
+const W0 = [50, 30, 20], wEls = [1, 2, 3].map(i => document.getElementById("w" + i));
+function top10(w) {
+  const s = w.reduce((a, b) => a + b, 0) || 1;
+  return PAYS.map(p => ({ p, score: (p[5] * w[0] + p[6] * w[1] + p[7] * w[2]) / s }))
+    .sort((a, b) => b.score - a.score).slice(0, 10);
+}
+const ref = new Set(top10(W0).map(d => d.p[0]));
+function drawScore() {
+  const w = wEls.map(e => +e.value), s = w.reduce((a, b) => a + b, 0) || 1;
+  wEls.forEach((e, i) => document.getElementById(`w${i + 1}-out`).textContent = Math.round(w[i] / s * 100) + " %");
+  const t = top10(w);
+  document.getElementById("rank-body").innerHTML = t.map((d, i) => `<tr><td class="num">${i + 1}</td><td>${d.p[1]} ${ref.has(d.p[0]) ? "" : '<span class="chip new">nouveau</span>'}</td>
+    <td class="num">${d.p[2].toLocaleString("fr-FR")}</td><td class="num">${d.p[3].toLocaleString("fr-FR")} %</td><td class="num">${d.p[4] > 0 ? "+" : ""}${d.p[4]} %</td></tr>`).join("");
+  const nouveaux = t.filter(d => !ref.has(d.p[0])).length;
+  document.getElementById("score-note").textContent = nouveaux === 0
+    ? "Même top 10 que le corrigé. Essayez de donner plus de poids à la dynamique."
+    : `${nouveaux} pays sur 10 changent. Les poids traduisent une stratégie : c'est pour cela que le corrigé teste 1 000 jeux de poids, et que seuls le Royaume-Uni et la France restent dans le top 10 dans plus de la moitié des cas.`;
+}
+wEls.forEach(e => e.addEventListener("input", drawScore));
+document.getElementById("reset").addEventListener("click", () => { wEls.forEach((e, i) => e.value = W0[i]); drawScore(); });
+drawScore();
+
+// ---------------------------------------------------------------- quiz
+const QUIZ = [
+  ["Dans le fichier Data, une ligne représente…", ["un pays", "un indicateur", "un pays × un indicateur, avec les années en colonnes", "un pays × un indicateur × une année"], 2,
+   "La clé (Country Code, Indicator Code) n'a aucun doublon, et les années sont des colonnes : c'est le format large."],
+  ["Gibraltar n'a pas de région dans Country. Que faites-vous ?", ["Je le supprime : pas de région = agrégat", "Je le garde : c'est un vrai territoire, ma règle doit le prévoir", "Je remplis sa région au hasard"], 1,
+   "Les agrégats n'ont pas de région, mais tout ce qui n'a pas de région n'est pas un agrégat. Le corrigé ajoute une 2ᵉ condition (code alpha-2)."],
+  ["Pourquoi Data contient-il des valeurs pour 2050 ?", ["Une erreur de saisie", "Ce sont des projections démographiques", "Des données confidentielles"], 1,
+   "Les colonnes 2020-2100 sont des projections (Wittgenstein). On ne les moyenne jamais avec des observations."],
+  ["Un taux vaut 40, 41, 42, 420 et 43 sur 5 années. Pour résumer ces années…", ["la moyenne (117)", "la médiane (42)", "le maximum"], 1,
+   "La médiane ignore l'année aberrante (un zéro en trop). La moyenne donnerait un taux impossible."],
+  ["Une corrélation de Pearson proche de 0 signifie…", ["qu'il n'y a aucun lien entre les variables", "qu'il n'y a pas de lien linéaire ; un lien en U reste possible", "que les données sont fausses"], 1,
+   "Un lien en U (non monotone) donne un r proche de 0. Regardez toujours le nuage de points."],
+  ["Pourquoi préférer Spearman sur ces données ?", ["Il est plus rapide à calculer", "Il travaille sur les rangs : la Chine et l'Inde ne l'écrasent pas", "Il donne toujours des valeurs plus élevées"], 1,
+   "Populations et PIB sont très asymétriques. Spearman mesure une relation monotone et résiste aux pays géants."],
+  ["Dans describe(), la ligne count indique…", ["le nombre de lignes du DataFrame", "le nombre de valeurs renseignées (non manquantes)", "le nombre de valeurs différentes"], 1,
+   "count ignore les NaN. C'est souvent moins que le nombre de pays : c'est une information sur la qualité."],
+  ["Liste noire (~isin) ou inner join avec Country : quel pays les distingue ?", ["Aucun, c'est équivalent", "Les îles Vierges britanniques (VGB), présentes dans Data mais absentes de Country", "La France"], 1,
+   "La liste noire garde ce qu'elle ne connaît pas ; la jointure ne garde que ce qui est connu. Il faut savoir ce qu'on perd."],
+  ["À quoi sert uv.lock, à côté de pyproject.toml ?", ["À rien, c'est un cache", "À figer les versions exactes de toutes les dépendances", "À verrouiller le notebook en lecture seule"], 1,
+   "pyproject.toml déclare ce qu'il faut ; uv.lock fige les versions exactes. uv sync recrée le même environnement chez n'importe qui."],
+];
+const quizEl = document.getElementById("quiz-list"); let answered = 0, good = 0;
+function updScore() { document.getElementById("quiz-score").textContent = `${good} / ${answered} (sur ${QUIZ.length})`; }
+QUIZ.forEach(([q, opts, ok, why], qi) => {
+  const box = document.createElement("div"); box.className = "q";
+  box.innerHTML = `<h3>${qi + 1}. ${q}</h3><div class="opts">${opts.map((o, i) => `<button type="button" class="opt" data-i="${i}">${o}</button>`).join("")}</div><p class="why" hidden></p>`;
+  box.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    if (box.dataset.done) return; box.dataset.done = "1";
+    const i = +b.dataset.i; answered++; if (i === ok) good++;
+    box.querySelectorAll(".opt")[ok].classList.add("ok"); if (i !== ok) b.classList.add("ko");
+    const w = box.querySelector(".why"); w.hidden = false; w.textContent = (i === ok ? "✓ Exact. " : "✗ Pas tout à fait. ") + why;
+    updScore();
+  }));
+  quizEl.appendChild(box);
+});
+updScore();
+
+// ---------------------------------------------------------------- check-list
+const CHECK = [
+  "Le notebook s'exécute de haut en bas sans erreur (Kernel › Restart & Run All)",
+  "Pour chaque fichier, je sais dire ce que représente une ligne",
+  "Chaque filtre affiche le nombre de lignes avant / après",
+  "Mes seuils (années, remplissage, corrélation) sont des variables en tête du notebook",
+  "J'ai au moins une fonction et une boucle for, et des noms de variables explicites",
+  "Mes graphiques ont un titre qui dit le message et des axes nommés",
+  "Ma présentation se comprend sans connaître pandas",
+  "pyproject.toml : `uv sync` dans un dossier vide recrée mon environnement",
+  "Fichiers nommés Nom_Prenom_n°_livrable_mmaaaa, dans un zip",
+];
+let saved = {}; try { saved = JSON.parse(localStorage.getItem("p01-check") || "{}"); } catch (e) { saved = {}; }
+document.getElementById("check-list").innerHTML = CHECK.map((c, i) =>
+  `<label for="c${i}"><input type="checkbox" id="c${i}" ${saved[i] ? "checked" : ""}><span>${c.replace(/`([^`]+)`/g, "<code>$1</code>")}</span></label>`).join("");
+document.getElementById("check-list").addEventListener("change", e => {
+  const i = e.target.id.slice(1); saved[i] = e.target.checked;
+  try { localStorage.setItem("p01-check", JSON.stringify(saved)); } catch (err) { /* stockage indisponible : la page marche sans */ }
+});
+</script>
