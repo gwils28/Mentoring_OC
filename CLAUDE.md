@@ -30,8 +30,9 @@ Procédure complète pour un projet : skill `projet-oc`.
 
 ## Hooks (`.claude/settings.json`)
 
-Écriture dans `data/raw/` refusée · `ruff format` après chaque modification d'un `.py` · arrêt bloqué tant que les
-tests d'un projet modifié échouent.
+Écriture dans `data/raw/` refusée · `ruff format` après chaque modification d'un `.py` · à l'arrêt, les tests des
+projets modifiés sont lancés et un échec bloque l'arrêt **une fois** (pour éviter une boucle) : ne jamais terminer
+sur un échec signalé.
 
 ## Commandes (depuis le dossier d'un projet)
 

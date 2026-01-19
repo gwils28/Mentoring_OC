@@ -3,7 +3,7 @@
 # et vérifiées par SHA-256 par le code du projet ; on ne les modifie jamais à la main.
 f=$(jq -r '.tool_input.file_path // .tool_input.notebook_path // empty')
 case "$f" in
-  */data/raw/*)
+  */data/raw/*|data/raw/*)  # absolu, ou relatif (« data/raw/x », « ./P01/data/raw/x »…)
     jq -n --arg f "$f" '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny",
       permissionDecisionReason: ("data/raw/ est immuable (" + $f + "). Écrire les sorties dans data/processed/, ou modifier le code de téléchargement dans src/<package>/io.py.")}}'
     ;;

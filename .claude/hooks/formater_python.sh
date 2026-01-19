@@ -6,4 +6,4 @@ f=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty')
 dir=$(dirname "$f")
 while [[ "$dir" != "/" && ! -f "$dir/pyproject.toml" ]]; do dir=$(dirname "$dir"); done
 [[ -f "$dir/pyproject.toml" ]] || exit 0
-cd "$dir" && uv run --quiet ruff format --quiet "$f"
+cd "$dir" && uv run --frozen --quiet ruff format --quiet "$f"
