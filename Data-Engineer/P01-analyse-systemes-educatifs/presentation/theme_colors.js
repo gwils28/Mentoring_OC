@@ -1,7 +1,7 @@
 // pptxgenjs écrit toujours la palette Office par défaut dans ppt/theme/theme1.xml :
 // on y remplace les 12 couleurs du thème pour que les couleurs « de schéma » des slides suivent notre charte.
 const fs = require("fs");
-const JSZip = require(require.resolve("jszip", { paths: [require.resolve("pptxgenjs")] }));
+const JSZip = require("jszip");
 
 const SLOTS = ["dk1", "lt1", "dk2", "lt2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6", "hlink", "folHlink"];
 

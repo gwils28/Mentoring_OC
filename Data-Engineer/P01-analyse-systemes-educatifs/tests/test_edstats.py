@@ -30,6 +30,18 @@ def test_find_aggregates_keeps_real_territories_without_region(countries):
     assert find_aggregates(countries) == ["ARB", "EUU", "WLD"]
 
 
+def test_find_aggregates_missing_alpha2_is_not_an_aggregate():
+    # sans région ET sans code alpha-2 : on ne peut pas prouver que c'est un agrégat, on le garde
+    country = pd.DataFrame(
+        {
+            "Country Code": ["FRA", "WLD", "XXX"],
+            "Region": ["Europe & Central Asia", None, None],
+            "2-alpha code": ["FR", "1W", None],
+        }
+    )
+    assert find_aggregates(country) == ["WLD"]
+
+
 def test_missing_rate_is_sorted_and_in_percent():
     df = pd.DataFrame({"a": [1, None, None, None], "b": [1, 2, None, 4], "c": [1, 2, 3, 4]})
     rate = missing_rate(df)
@@ -85,7 +97,8 @@ def test_percentile_score_ranks_and_weights():
     assert score.idxmax() == "P3"
     # poids égaux : a et b s'opposent, tous les pays sont à égalité
     score = percentile_score(df, {"a": 0.5, "b": 0.5})
-    assert score.nunique() == 1
+    # égalité à la précision flottante près (0.5·r_a + 0.5·r_b n'est pas exactement constant)
+    assert np.allclose(score, score.iloc[0])
 
 
 def test_percentile_score_rejects_unknown_columns():
@@ -120,3 +133,62 @@ def test_select_non_redundant_requires_full_priority():
     corr = pd.DataFrame([[1.0, 0.1], [0.1, 1.0]], index=list("ab"), columns=list("ab"))
     with pytest.raises(ValueError):
         select_non_redundant(corr, priority=["a"], threshold=0.7)
+
+
+def test_select_non_redundant_rejects_nan_correlation_with_kept_variable():
+    # c est constante : sa corrélation avec a est NaN, on ne doit pas l'écarter en silence
+    corr = pd.DataFrame(
+        [[1.0, 0.1, np.nan], [0.1, 1.0, np.nan], [np.nan, np.nan, 1.0]],
+        index=list("abc"),
+        columns=list("abc"),
+    )
+    with pytest.raises(ValueError, match="c"):
+        select_non_redundant(corr, priority=["a", "b", "c"], threshold=0.7)
+
+
+# --- percentile_score : NaN et poids ---
+
+
+def test_percentile_score_rejects_nan_in_criteria():
+    df = pd.DataFrame({"a": [1, np.nan, 3], "b": [1.0, 2.0, 3.0]}, index=["P1", "P2", "P3"])
+    with pytest.raises(ValueError, match=r"a.*1"):
+        percentile_score(df, {"a": 0.5, "b": 0.5})
+
+
+def test_percentile_score_ignores_nan_in_unused_columns():
+    df = pd.DataFrame({"a": [1, 2, 3], "autre": [np.nan, 1, 2]})
+    assert percentile_score(df, {"a": 1.0}).notna().all()
+
+
+@pytest.mark.parametrize("weights", [{"a": -1.0, "b": 2.0}, {"a": 0.0, "b": 0.0}])
+def test_percentile_score_rejects_negative_or_zero_sum_weights(weights):
+    df = pd.DataFrame({"a": [1, 2, 3], "b": [3, 2, 1]})
+    with pytest.raises(ValueError):
+        percentile_score(df, weights)
+
+
+# --- weight_sensitivity : NaN et tirage autour des poids métier ---
+
+
+def test_weight_sensitivity_rejects_nan_in_criteria():
+    df = pd.DataFrame({"a": [1, np.nan, 3], "b": [1.0, 2.0, 3.0]})
+    with pytest.raises(ValueError, match="a"):
+        weight_sensitivity(df, ["a", "b"], n_draws=10, top=1)
+
+
+def test_weight_sensitivity_centered_on_business_weights():
+    # P1 gagne si a domine, P2 si b domine. Avec des poids centrés sur a (0.9) et une forte
+    # concentration, P1 est presque toujours dans le top 1 ; en tirage uniforme, environ une fois sur deux.
+    df = pd.DataFrame({"a": [3, 1, 2], "b": [1, 3, 2]}, index=["P1", "P2", "P3"])
+    centered = weight_sensitivity(
+        df, ["a", "b"], n_draws=500, top=1, seed=0, center={"a": 0.9, "b": 0.1}, concentration=200
+    )
+    uniform = weight_sensitivity(df, ["a", "b"], n_draws=500, top=1, seed=0)
+    assert centered["P1"] > 0.95
+    assert 0.3 < uniform["P1"] < 0.7
+
+
+def test_weight_sensitivity_center_must_match_criteria():
+    df = pd.DataFrame({"a": [1, 2], "b": [2, 1]})
+    with pytest.raises(ValueError):
+        weight_sensitivity(df, ["a", "b"], n_draws=10, top=1, center={"a": 1.0})

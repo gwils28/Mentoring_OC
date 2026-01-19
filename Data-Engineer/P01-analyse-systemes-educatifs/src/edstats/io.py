@@ -29,20 +29,41 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _check_hash(path: Path) -> None:
+    found = sha256(path)
+    if found != ZIP_SHA256:
+        raise ValueError(
+            f"Empreinte inattendue pour {path} : {found} (attendue : {ZIP_SHA256}). "
+            "Téléchargement corrompu ou fichier source modifié : les résultats du corrigé ne sont plus "
+            f"garantis. Pour retélécharger : supprimer {ZIP_PATH} ou appeler download(force=True)."
+        )
+
+
 def download(force: bool = False) -> Path:
     """Télécharge le zip si besoin, vérifie son empreinte puis l'extrait dans data/raw/."""
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     if force or not ZIP_PATH.exists():
-        urllib.request.urlretrieve(DATA_URL, ZIP_PATH)
-    found = sha256(ZIP_PATH)
-    if found != ZIP_SHA256:
-        raise ValueError(
-            f"Empreinte inattendue pour {ZIP_PATH.name} : {found}. "
-            "Le fichier source a changé : les résultats du corrigé ne sont plus garantis."
-        )
+        # On télécharge à côté (.part) et on ne renomme qu'après vérification : un téléchargement
+        # interrompu ou corrompu ne peut jamais se faire passer pour le vrai edstats.zip.
+        partial = ZIP_PATH.with_name(ZIP_PATH.name + ".part")
+        urllib.request.urlretrieve(DATA_URL, partial)
+        try:
+            _check_hash(partial)
+        except ValueError:
+            partial.unlink()
+            raise
+        partial.replace(ZIP_PATH)
+    _check_hash(ZIP_PATH)
     with zipfile.ZipFile(ZIP_PATH) as archive:
-        missing = [n for n in archive.namelist() if not (RAW_DIR / n).exists()]
-        archive.extractall(RAW_DIR, members=missing)
+        # On (ré)extrait tout fichier absent ou dont la taille diffère de celle annoncée dans le zip
+        # (extraction précédente interrompue = CSV tronqué).
+        to_extract = [
+            info
+            for info in archive.infolist()
+            if not (RAW_DIR / info.filename).exists()
+            or (RAW_DIR / info.filename).stat().st_size != info.file_size
+        ]
+        archive.extractall(RAW_DIR, members=to_extract)
     return RAW_DIR
 
 
