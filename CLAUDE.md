@@ -16,6 +16,23 @@ Public visé : apprenants **débutants**. Tout le contenu est en français.
 - Chaque projet contient un `PLAN.md`, figé avant les résultats ; les écarts vont dans le README (« ce qui a changé
   par rapport au plan »).
 
+## Équipe de subagents (`.claude/agents/`)
+
+| Agent | Quand l'appeler |
+|---|---|
+| `product-owner` | cadrage d'un projet (critères d'acceptation) et recette finale avant push |
+| `statisticien` | protocole du `PLAN.md` avant les résultats, puis tout chiffre ou conclusion publiés |
+| `expert-data-engineering` | code du package, tests, environnement, performance, « aller plus loin » |
+| `pedagogue` | tout support lu par un apprenant ou un mentor, avant commit |
+
+Les relecteurs travaillent en lecture seule ; en lancer plusieurs en parallèle sur des fichiers distincts.
+Procédure complète pour un projet : skill `projet-oc`.
+
+## Hooks (`.claude/settings.json`)
+
+Écriture dans `data/raw/` refusée · `ruff format` après chaque modification d'un `.py` · arrêt bloqué tant que les
+tests d'un projet modifié échouent.
+
 ## Commandes (depuis le dossier d'un projet)
 
 ```bash
