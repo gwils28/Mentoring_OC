@@ -6,8 +6,10 @@ FootNote : suppression des doublons,643638,643638,0
 Data : suppression des doublons,886930,886930,0
 Country : faux pays,241,216,25
 Data : faux pays (inner join),886930,791640,95290
+Country-Series : faux pays (inner join),613,613,0
+FootNote : faux pays (inner join),643638,518109,125529
 Data : familles métier,791640,156816,634824
 Series : familles métier,3665,751,2914
 Country-Series : familles métier,613,613,0
 FootNote : familles métier,518109,233371,284738
-Data → pivot pays × indicateurs,16200,216,15984
+"Data (format long) → une ligne par pays : changement de maille, pas une perte",16200,216,15984

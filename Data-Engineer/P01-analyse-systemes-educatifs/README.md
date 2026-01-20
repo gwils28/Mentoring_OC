@@ -27,7 +27,8 @@ pays présentent le plus fort potentiel.
 | Périmètre | 3 665 indicateurs → 751 (métier) → 314 (≥ 60 % renseignés sur 2010-2014) → 15 → **5 non redondants** |
 | Agrégation | médiane 2010-2014, avec au moins 3 années renseignées → 216 pays × 15 indicateurs |
 | Score | 3 critères en rangs : marché connecté 50 %, maturité numérique 30 %, dynamique 2015-2030 20 % ; 161 pays notés |
-| Recommandation | **Royaume-Uni et France** (top 10 dans 74 % et 59 % des 1 000 jeux de poids) ; ensuite deux stratégies : marchés matures ou émergents connectés (Maroc, Arabie saoudite, Mexique…) |
+| Robustesse | autour des poids métier : 8 pays dans le top 10 au moins 89 % du temps ; en tirage uniforme des poids : seuls **Royaume-Uni** (74 %) et **France** (59 %) au-delà de 50 % |
+| Recommandation | **Royaume-Uni et France** d'abord ; ensuite deux stratégies : marchés matures (États-Unis, Russie, Allemagne, Japon) ou connectés en croissance (Maroc, Arabie saoudite, Mexique…) |
 
 Constat principal : maturité numérique et croissance de la cible sont **anti-corrélées** (ρ = −0,66). Le choix des
 pays au-delà des deux premiers est donc une décision stratégique, pas statistique.
@@ -36,7 +37,7 @@ pays au-delà des deux premiers est donc une décision stratégique, pas statist
 
 ```bash
 uv sync --frozen                     # environnement exact (Python 3.12, versions de uv.lock)
-uv run pytest                        # 11 tests du package edstats
+uv run pytest                        # 25 tests du package edstats
 uv run jupyter lab                   # le premier chargement télécharge et vérifie les données (~39 Mo)
 ```
 
@@ -46,7 +47,7 @@ Réexécuter tous les notebooks :
 uv run jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb pedagogie/*.ipynb
 ```
 
-Regénérer la présentation : voir [presentation/README.md](presentation/README.md).
+Régénérer la présentation : voir [presentation/README.md](presentation/README.md).
 
 ## Organisation
 
@@ -67,14 +68,20 @@ Regénérer la présentation : voir [presentation/README.md](presentation/README
 
 | Plan | Réalité | Pourquoi |
 |---|---|---|
-| Années 2010-2015 | **2010-2014** | 2015 n'est renseignée qu'à 33 % (contre 43 à 55 % pour les autres années) ; sur 2010-2015, le taux de scolarisation supérieure tombait sous le seuil de 60 % |
+| Années 2010-2015 | **2010-2014** | 2015 n'est renseignée qu'à 33 % (contre 43 à 55 % pour les autres années) |
+| Familles listées dans le plan | + « Health: Population: Structure / Dynamics » | la structure par âge et la croissance démographique y sont classées |
 | Score à 4 critères (+ pouvoir d'achat, + scolarisation supérieure) | **3 critères** | PIB/hab et scolarisation supérieure sont redondants avec le taux d'internet (ρ = 0,91 et 0,79) : les garder aurait compté trois fois le niveau de développement |
 | Poids 40 / 30 / 20 / 10 | **50 / 30 / 20** | conséquence du point précédent |
-| Une recommandation robuste attendue | **Seulement 2 pays robustes** | l'anti-corrélation maturité / dynamique rend le classement sensible aux poids ; c'est devenu le message central de la présentation |
+| Robustesse testée par un tirage de poids | **Deux lois de tirage** | relecture du statisticien : la fréquence dépend de la loi. Autour des poids métier, 8 pays sont stables ; en tirage uniforme, 2 seulement. C'est le choix de stratégie qui est fragile, pas les poids |
+| — | Internet compté dans 2 critères sur 3 | choix assumé (pas de client en ligne sans internet) ; variante « taille sans internet » montrée : 8 pays sur 10 communs |
+| Comparaison moyenne / médiane prévue | Non faite dans le notebook | la médiane est justifiée par l'exemple de la fiche 2 (une année aberrante) |
+| `make notebooks` | `nbconvert` | pas de Makefile : la commande est donnée ci-dessus |
 | — | Bug corrigé dans `redundant_pairs` | plantait sur une matrice issue d'un `pivot_table` (index et colonnes portant le même nom) ; reproduit par un test avant correction |
 
 ## Limites connues
 
 - Données arrêtées en 2014 (export OpenClassrooms de 2018) : les ordres de grandeur d'internet ont changé depuis.
+- Les fichiers du corrigé ne suivent pas le nommage `Nom_Prenom_n°_livrable_mmaaaa` demandé aux apprenants : c'est
+  un corrigé de référence, pas un dépôt.
 - Contrôle visuel du `.pptx` non fait avec LibreOffice (absent de la machine de production) : fichier validé par
   schéma, contenu relu, figures vérifiées individuellement. La version web du deck a été contrôlée.
