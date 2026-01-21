@@ -19,6 +19,15 @@ nettoyage, et des **choix d'indicateurs reliés au besoin métier**.
 - **Pas de soutenance** : c'est le mentor qui valide le projet en séance bilan. On ne bloque pas le passage au
   projet suivant pour des points non critiques.
 - **Livrables** : un notebook, une présentation, un `pyproject.toml` (uv).
+- **Le corrigé est public** (repo GitHub). Plutôt que de le cacher, le dire à l'apprenant et lui demander de ne
+  pas l'ouvrir avant son bilan : il sert au mentor à **comparer**.
+- **Quand donner quoi** : la page interactive dès le début (son labo 2 reste replié tant que l'apprenant n'a pas
+  proposé sa propre méthode) ; les fiches 1 à 4 à la demande, quand une notion bloque ; la **fiche 5 seulement après**
+  que l'apprenant a proposé sa propre méthode de sélection des pays (partie 3, étape 2), car elle montre celle du
+  corrigé.
+- **Partager la page interactive** : `site/index.html` affiché sur GitHub n'est que du code. Envoyer à l'apprenant
+  le lien de la version web (artifact Claude, privé par défaut : le partager depuis son menu Share), ou lui faire
+  ouvrir le fichier téléchargé dans un navigateur.
 - **Adapter le niveau** : un apprenant qui code déjà sera surtout challengé sur la statistique et le métier ; un
   apprenant à l'aise en statistique, sur la qualité du code (fonctions, nommage, absence de hardcoding).
   En cas de prérequis manifestement absents, alerter l'équipe pédagogique **tôt**.
@@ -45,4 +54,7 @@ ses choix ; un **ordre de grandeur** très différent mérite en revanche une qu
 | Liste ou jointure | 1 pays d'écart (VGB, absent de Country) |
 | Indicateurs | 3 665 → 751 (familles métier) → 314 (≥ 60 % renseignés sur 2010-2014) → 15 → 5 non redondants |
 | Années utiles | 2010-2014 ; 2015-2017 presque vides ; 2020-2100 = projections |
-| Score | 161 pays notés ; top robuste : Royaume-Uni, France |
+| Indicateurs finaux | internet (% population), population 15-24 ans, croissance démographique, PIB total, chômage |
+| Score | 3 critères en rangs : marché connecté 50 %, maturité numérique 30 %, dynamique 20 % ; 161 pays notés |
+| Arbitrage | maturité et dynamique anti-corrélées : ρ = −0,66 |
+| Robustesse | autour des poids : 8 pays dans le top 10 ≥ 89 % du temps ; tirage uniforme : seuls Royaume-Uni (74 %) et France (59 %) > 50 % |

@@ -148,8 +148,8 @@ footer { font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--line
 
 <section id="entonnoir" aria-labelledby="t-entonnoir">
   <span class="eyebrow">Réduire le périmètre</span>
-  <h2 id="t-entonnoir">De 3 665 indicateurs à 5, en filtrant</h2>
-  <p class="muted">Chaque filtre est chiffré, et c'est ce qui rend la démarche défendable. Les barres sont à l'échelle logarithmique : sinon, les dernières étapes seraient invisibles.</p>
+  <h2 id="t-entonnoir">De 3 665 indicateurs à une poignée, en filtrant</h2>
+  <p class="muted">Chaque filtre doit être chiffré : c'est ce qui rend votre démarche défendable. Les « ? » sont à compléter avec <b>vos</b> chiffres, car ils dépendent de vos choix (familles, années, seuils). Il n'y a pas une seule bonne réponse.</p>
   <div class="funnel" id="funnel"></div>
 </section>
 
@@ -178,24 +178,28 @@ footer { font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--line
 </section>
 
 <section id="labo-score" aria-labelledby="t-score">
-  <span class="eyebrow">Labo 2 · score pays (vraies données du corrigé)</span>
+  <span class="eyebrow">Labo 2 · score pays</span>
   <h2 id="t-score">Changez les poids, regardez le top 10 bouger</h2>
-  <p class="muted">161 pays, 3 critères convertis en rangs (0 = dernier pays, 1 = premier). Les poids du corrigé sont 50 / 30 / 20. Les pays marqués <span class="chip new">nouveau</span> n'étaient pas dans le top 10 du corrigé.</p>
+  <p class="muted"><b>À ouvrir une fois que vous avez proposé votre propre méthode de sélection</b> (exercice 3, étape 2) : ce labo montre une méthode possible, pas la seule.</p>
+  <details id="labo2-details">
+  <summary class="reset" style="cursor:pointer">J'ai proposé ma méthode : ouvrir le labo</summary>
+  <p class="muted" style="margin-top:12px">161 pays, 3 critères convertis en rangs (0 = dernier pays, 1 = premier), avec des poids de départ 50 / 30 / 20. Les pays marqués <span class="chip new">nouveau</span> n'étaient pas dans le top 10 avec les poids de départ.</p>
   <div class="lab">
     <div class="controls">
       <div class="slider"><label for="w1">Marché connecté (15-24 ans × % internautes) <output id="w1-out"></output></label><input type="range" id="w1" min="0" max="100" value="50"></div>
       <div class="slider"><label for="w2">Maturité numérique (% internautes) <output id="w2-out"></output></label><input type="range" id="w2" min="0" max="100" value="30"></div>
       <div class="slider"><label for="w3">Dynamique (croissance de la cible 2015-2030) <output id="w3-out"></output></label><input type="range" id="w3" min="0" max="100" value="20"></div>
-      <button type="button" class="reset" id="reset">Revenir aux poids du corrigé</button>
+      <button type="button" class="reset" id="reset">Revenir aux poids de départ</button>
       <p class="verdict" id="score-note"></p>
     </div>
     <div class="table-scroll">
       <table class="rank" aria-label="Top 10 des pays selon les poids choisis">
-        <thead><tr><th>#</th><th>Pays</th><th style="text-align:right">Connectés (M)</th><th style="text-align:right">Internet</th><th style="text-align:right">2030</th></tr></thead>
+        <thead><tr><th>#</th><th>Pays</th><th style="text-align:right">Connectés (M)</th><th style="text-align:right">Internet</th><th style="text-align:right">Cible 2015→2030</th></tr></thead>
         <tbody id="rank-body"></tbody>
       </table>
     </div>
   </div>
+  </details>
 </section>
 
 <section id="quiz" aria-labelledby="t-quiz">
@@ -213,7 +217,7 @@ footer { font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--line
 </section>
 
 <footer>
-  Supports de mentorat : notebook corrigé, fiches pédagogiques et kit mentor dans le dépôt <a href="https://github.com/gwils28/Mentoring_OC" target="_blank" rel="noopener">gwils28/Mentoring_OC</a>. Données : EdStats, Banque mondiale (fichier fourni par OpenClassrooms).
+  Page préparée par votre mentor pour le projet « Analysez les données de systèmes éducatifs ». Données : EdStats, Banque mondiale (fichier fourni par OpenClassrooms).
 </footer>
 </div>
 
@@ -224,26 +228,26 @@ const PAYS = [["GBR","United Kingdom",6.96,87.5,21.0,0.9503,0.9503,0.4596],["FRA
 const ETAPES = [
   { t: "Charger et décrire", faire: ["Charger les 5 CSV avec <code>pd.read_csv</code>", "Pour chaque fichier, dire ce que représente <b>une ligne</b>", "<code>shape</code>, <code>info()</code>, <code>describe()</code>, <code>value_counts()</code>"],
     piege: "Croire qu'une ligne de Data = un pays. C'est un pays × un indicateur : vérifiez-le avec <code>duplicated(subset=[...])</code>.",
-    mentor: "« Combien de lignes pour la France dans Data ? Pourquoi autant ? »", fiche: "01_maille_et_qualite.ipynb" },
-  { t: "Nettoyer", faire: ["Compter et supprimer les doublons", "Mesurer les valeurs manquantes par colonne", "Retirer les 25 « faux pays » (Monde, zones, groupes de revenu) : par liste avec <code>~isin()</code> puis par <code>merge(how=\"inner\")</code>"],
+    mentor: "« Combien de lignes pour la France dans Data ? Pourquoi autant ? »", fiche: "fiche 1 (maille et qualité)" },
+  { t: "Nettoyer", faire: ["Compter et supprimer les doublons", "Mesurer les valeurs manquantes par colonne", "Retirer les « faux pays » (Monde, zones, groupes de revenu) : par liste avec <code>~isin()</code> puis par <code>merge(how=\"inner\")</code>"],
     piege: "Gibraltar et Nauru n'ont pas de région, mais ce sont de vrais territoires. Une règle de nettoyage se vérifie sur ses exceptions.",
-    mentor: "« Liste ou jointure : pourquoi n'obtiens-tu pas le même nombre de pays ? »", fiche: "01_maille_et_qualite.ipynb" },
+    mentor: "« Liste ou jointure : pourquoi n'obtiens-tu pas le même nombre de pays ? »", fiche: "fiche 1 (maille et qualité)" },
   { t: "Réduire", faire: ["Garder les familles d'indicateurs (<code>Topic</code>) utiles à academy", "Choisir les années : 2010-2014 sont récentes et remplies", "Taux de remplissage avec <code>groupby</code>, puis une quinzaine d'indicateurs", "<code>pivot_table</code> : une ligne = un pays"],
     piege: "Mélanger des projections (2020-2100) avec des observations dans une même moyenne.",
-    mentor: "« Pourquoi agréger les années ? Moyenne ou médiane ? Sur combien d'années au minimum ? »", fiche: "02_filtrer_agreger.ipynb" },
+    mentor: "« Pourquoi agréger les années ? Moyenne ou médiane ? Sur combien d'années au minimum ? »", fiche: "fiche 2 (filtrer et agréger)" },
   { t: "Analyser", faire: ["Matrices de corrélation de Pearson <b>et</b> de Spearman, en heatmap", "Retirer les indicateurs redondants (|r| ≥ 0,7)", "Une fonction <code>describe</code> + histogramme, appliquée dans une boucle <code>for</code>"],
     piege: "Lire la moyenne d'une distribution très asymétrique (population, PIB) comme celle d'un « pays typique ».",
-    mentor: "« Explique chaque ligne de describe(). Que veut dire count ? »", fiche: "03_correlations.ipynb · 04_distributions.ipynb" },
+    mentor: "« Explique chaque ligne de describe(). Que veut dire count ? »", fiche: "fiches 3 (corrélations) et 4 (distributions)" },
   { t: "Recommander", faire: ["Une méthode chiffrée pour choisir des pays (top communs, score pondéré)", "Une présentation pour Mark, qui n'est pas technicien", "<code>uv init</code>, <code>uv add</code>, <code>pyproject.toml</code>"],
     piege: "Additionner des critères d'unités différentes, ou conclure à une causalité.",
-    mentor: "« Si je change tes poids, ta recommandation tient-elle ? »", fiche: "05_scorer_des_pays.ipynb" },
+    mentor: "« Si je change tes poids, ta recommandation tient-elle ? »", fiche: "fiche 5 (scorer des pays), à ouvrir après avoir proposé votre propre méthode" },
 ];
 const stepsEl = document.getElementById("steps"), panelEl = document.getElementById("panel");
 function showStep(i) {
   [...stepsEl.children].forEach((b, j) => { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
   const e = ETAPES[i];
   panelEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;min-width:0"><h3>${e.t}</h3><ul>${e.faire.map(f => `<li>${f}</li>`).join("")}</ul>
-    <p class="muted" style="font-size:.92rem">Fiche à dérouler : <code>pedagogie/${e.fiche}</code></p></div>
+    <p class="muted" style="font-size:.92rem">Pour revoir la notion : ${e.fiche}</p></div>
     <div class="side"><div class="callout trap"><b>Piège classique</b>${e.piege}</div><div class="callout ask"><b>Votre mentor demandera</b>${e.mentor}</div></div>`;
 }
 ETAPES.forEach((e, i) => {
@@ -262,11 +266,10 @@ ETAPES.forEach((e, i) => {
 showStep(0);
 
 // ---------------------------------------------------------------- entonnoir
-const FUNNEL = [[3665, "indicateurs bruts"], [751, "familles utiles au métier"], [314, "renseignés à ≥ 60 % (2010-2014)"], [15, "retenus pour leur sens métier"], [5, "non redondants"]];
-const maxLog = Math.log10(3665);
-document.getElementById("funnel").innerHTML = FUNNEL.map(([v, l], i) =>
-  `<div class="frow"><span class="v">${v.toLocaleString("fr-FR")}</span>
-   <div><div class="bar${i === FUNNEL.length - 1 ? " last" : ""}" style="width:${Math.max(6, Math.log10(v) / maxLog * 100)}%">${l}</div></div></div>`).join("");
+const FUNNEL = [["3 665", "indicateurs bruts", 100], ["?", "familles utiles au métier (colonne Topic)", 80], ["?", "assez renseignés sur vos années", 58], ["~15", "retenus pour leur sens métier", 36], ["?", "non redondants (|r| < 0,7)", 20]];
+document.getElementById("funnel").innerHTML = FUNNEL.map(([v, l, w], i) =>
+  `<div class="frow"><span class="v">${v}</span>
+   <div><div class="bar${i === FUNNEL.length - 1 ? " last" : ""}" style="width:${w}%">${l}</div></div></div>`).join("");
 
 // ---------------------------------------------------------------- labo corrélation
 function rand(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
@@ -311,6 +314,7 @@ function drawLab() {
   ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.fillStyle = css("--ink-2"); ctx.font = "13px " + css("--body");
   [lo, hi].forEach(v => { ctx.beginPath(); ctx.moveTo(pad, sy(v)); ctx.lineTo(W - pad, sy(v)); ctx.stroke(); ctx.fillText(Math.round(v), 6, sy(v) + 4); });
   ctx.fillText("indicateur x", W - pad - 80, H - 14);
+  ctx.fillText("indicateur y", pad + 6, pad - 14);
   for (let i = 0; i < N; i++) {
     const last = i === N - 1;
     ctx.beginPath(); ctx.arc(sx(xs[i]), sy(y[i]), last ? 9 : 6, 0, 2 * Math.PI);
@@ -349,8 +353,8 @@ function drawScore() {
     <td class="num">${d.p[2].toLocaleString("fr-FR")}</td><td class="num">${d.p[3].toLocaleString("fr-FR")} %</td><td class="num">${d.p[4] > 0 ? "+" : ""}${d.p[4]} %</td></tr>`).join("");
   const nouveaux = t.filter(d => !ref.has(d.p[0])).length;
   document.getElementById("score-note").textContent = nouveaux === 0
-    ? "Même top 10 que le corrigé. Essayez de donner plus de poids à la dynamique."
-    : `${nouveaux} pays sur 10 changent. Les poids traduisent une stratégie : c'est pour cela que le corrigé teste 1 000 jeux de poids, et que seuls le Royaume-Uni et la France restent dans le top 10 dans plus de la moitié des cas.`;
+    ? "Même top 10 qu'avec les poids de départ. Essayez de donner plus de poids à la dynamique."
+    : `${nouveaux} pays sur 10 changent. Les poids traduisent une stratégie (marché solvable aujourd'hui ou marché qui grandit) : avant de recommander un pays, vérifiez qu'il reste bien classé quand on fait varier les poids.`;
 }
 wEls.forEach(e => e.addEventListener("input", drawScore));
 document.getElementById("reset").addEventListener("click", () => { wEls.forEach((e, i) => e.value = W0[i]); drawScore(); });
@@ -360,9 +364,9 @@ drawScore();
 const QUIZ = [
   ["Dans le fichier Data, une ligne représente…", ["un pays", "un indicateur", "un pays × un indicateur, avec les années en colonnes", "un pays × un indicateur × une année"], 2,
    "La clé (Country Code, Indicator Code) n'a aucun doublon, et les années sont des colonnes : c'est le format large."],
-  ["Gibraltar n'a pas de région dans Country. Que faites-vous ?", ["Je le supprime : pas de région = agrégat", "Je le garde : c'est un vrai territoire, ma règle doit le prévoir", "Je remplis sa région au hasard"], 1,
-   "Les agrégats n'ont pas de région, mais tout ce qui n'a pas de région n'est pas un agrégat. Le corrigé ajoute une 2ᵉ condition (code alpha-2)."],
-  ["Pourquoi Data contient-il des valeurs pour 2050 ?", ["Une erreur de saisie", "Ce sont des projections démographiques", "Des données confidentielles"], 1,
+  ["Gibraltar n'a pas de région dans Country. Que faites-vous ?", ["Je le supprime : la règle « pas de région » est simple, et le cas est marginal", "Je le garde : c'est un vrai territoire, ma règle doit le prévoir", "Je le garde mais je supprime tous les pays sans groupe de revenu"], 1,
+   "Les agrégats n'ont pas de région, mais tout ce qui n'a pas de région n'est pas un agrégat. Ajoutez une 2ᵉ condition et vérifiez votre règle sur Gibraltar et Nauru (fiche 1)."],
+  ["Pourquoi Data contient-il des valeurs pour 2050 ?", ["Des valeurs extrapolées par la Banque mondiale : on peut les moyenner avec 2010-2014", "Ce sont des projections démographiques : on les garde à part", "Des erreurs de saisie à supprimer"], 1,
    "Les colonnes 2020-2100 sont des projections (Wittgenstein). On ne les moyenne jamais avec des observations."],
   ["Un taux vaut 40, 41, 42, 420 et 43 sur 5 années. Pour résumer ces années…", ["la moyenne (117)", "la médiane (42)", "le maximum"], 1,
    "La médiane ignore l'année aberrante (un zéro en trop). La moyenne donnerait un taux impossible."],
@@ -372,8 +376,10 @@ const QUIZ = [
    "Populations et PIB sont très asymétriques. Spearman mesure une relation monotone et résiste aux pays géants."],
   ["Dans describe(), la ligne count indique…", ["le nombre de lignes du DataFrame", "le nombre de valeurs renseignées (non manquantes)", "le nombre de valeurs différentes"], 1,
    "count ignore les NaN. C'est souvent moins que le nombre de pays : c'est une information sur la qualité."],
-  ["Liste noire (~isin) ou inner join avec Country : quel pays les distingue ?", ["Aucun, c'est équivalent", "Les îles Vierges britanniques (VGB), présentes dans Data mais absentes de Country", "La France"], 1,
-   "La liste noire garde ce qu'elle ne connaît pas ; la jointure ne garde que ce qui est connu. Il faut savoir ce qu'on perd."],
+  ["Vos deux méthodes (liste avec ~isin, inner join avec Country) ne donnent pas le même nombre de pays. Cause la plus probable ?", ["Un bug de pandas", "Un pays présent dans Data mais absent de Country : la jointure le retire, la liste le garde", "Des doublons dans Country"], 1,
+   "La liste noire garde ce qu'elle ne connaît pas ; la jointure ne garde que ce qui est connu. Cherchez le pays en cause avec une différence d'ensembles, et décidez en connaissance de cause."],
+  ["Pour un pays, votre médiane 2010-2014 d'un indicateur ne repose que sur 2 années renseignées. Que faites-vous ?", ["Je garde la valeur : une médiane reste une médiane", "Je mets la valeur à NaN, avec un minimum d'années fixé en paramètre en tête du notebook", "Je remplace par la moyenne mondiale"], 1,
+   "Une « médiane » de 2 valeurs n'est pas une tendance. Un minimum d'années (3 par exemple), écrit en paramètre, rend la règle visible et modifiable."],
   ["À quoi sert uv.lock, à côté de pyproject.toml ?", ["À rien, c'est un cache", "À figer les versions exactes de toutes les dépendances", "À verrouiller le notebook en lecture seule"], 1,
    "pyproject.toml déclare ce qu'il faut ; uv.lock fige les versions exactes. uv sync recrée le même environnement chez n'importe qui."],
 ];

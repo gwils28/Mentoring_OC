@@ -14,7 +14,7 @@ livrable.
 | 5-15 | « Raconte-moi le projet comme si j'étais Mark » : contexte, livrables, niveau attendu | [questions §0](02_questions_oral.md#0-compréhension-du-projet) |
 | 15-30 | Partage d'écran sur le notebook : maille de chaque fichier, faux pays, valeurs manquantes | [questions §1](02_questions_oral.md#1-exploration-partie-1) |
 | 30-45 | Choix des familles d'indicateurs et des années : faire **justifier** chaque filtre | [questions §2](02_questions_oral.md#2-réduction-du-périmètre-partie-2) |
-| 45-55 | Une notion fragile ? Dérouler la fiche correspondante | [fiches](../pedagogie/) |
+| 45-55 | Une notion fragile ? Dérouler la fiche correspondante (fiche 5 seulement si l'apprenant a déjà sa propre méthode) | [fiches](../pedagogie/) |
 | 55-60 | 3 actions concrètes pour la suite, écrites par l'apprenant | — |
 
 ### Bilan : voir [05_trame_bilan.md](05_trame_bilan.md)
@@ -25,7 +25,7 @@ livrable.
 |---|---|---|---|
 | 1 | début, avant de coder | cadrer | comprendre la demande de Mark ; installer l'environnement (uv, JupyterLab) ; charger les 5 fichiers ; « une ligne = ? » |
 | 2 | fin de la partie 1 | méthode | faux pays (les 2 méthodes), valeurs manquantes, premières réductions ; montrer comment déboguer |
-| 3 | partie 3 en cours | analyse | corrélations, distributions, méthode de sélection des pays ; plan de la présentation |
+| 3 | partie 3 en cours | analyse | corrélations, distributions ; l'apprenant **présente d'abord sa** méthode de sélection des pays, puis on déroule la fiche 5 pour la challenger (robustesse aux poids) ; plan de la présentation |
 | Bilan | après dépôt | valider | [05_trame_bilan.md](05_trame_bilan.md) |
 
 ## Bonnes pratiques de séance

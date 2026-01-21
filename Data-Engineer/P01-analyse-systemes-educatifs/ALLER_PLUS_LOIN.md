@@ -29,8 +29,9 @@ Pour chaque thème : **ce qu'on fait dans le projet**, **la pratique actuelle**,
 |---|---|
 | CSV de 326 Mo lu entièrement en mémoire | **Parquet** (stockage en colonnes, typé, compressé) ; moteurs **Polars** ou **DuckDB** |
 
-- **pandas 3** (utilisé ici) active le *copy-on-write* et un vrai type `str` adossé à Arrow : moins de copies
-  silencieuses et moins d'avertissements `SettingWithCopyWarning`.
+- **pandas 3** (utilisé ici) active le *copy-on-write* : une sélection ne modifie plus jamais le DataFrame d'origine
+  par surprise, et l'avertissement `SettingWithCopyWarning` a disparu. Il introduit aussi un type `str` dédié pour
+  le texte (adossé à Arrow si `pyarrow` est installé, ce qui n'est pas le cas dans ce projet).
 - **Polars** : API de DataFrame en Rust, multi-cœur, avec un mode *lazy* qui optimise toute la requête avant de
   l'exécuter.
 - **DuckDB** : du SQL directement sur des CSV ou des Parquet, sans serveur. C'est idéal pour explorer un gros fichier.
@@ -38,10 +39,11 @@ Pour chaque thème : **ce qu'on fait dans le projet**, **la pratique actuelle**,
 **Essayer** (DuckDB) : la proportion de valeurs renseignées par année, sans charger le fichier dans pandas.
 
 ```sql
--- uv add duckdb ; puis dans un notebook : duckdb.sql("""…""").df()
-SELECT count("2010") / count(*) AS part_2010,
+-- uv add duckdb ; puis dans un notebook de notebooks/ : duckdb.sql("""…""").df()
+-- (le chemin est relatif au dossier du notebook, d'où le ../)
+SELECT count("2010") / count(*) AS part_2010,     -- 0,273 : identique au corrigé
        count("2014") / count(*) AS part_2014
-FROM 'data/raw/EdStatsData.csv';
+FROM '../data/raw/EdStatsData.csv';
 ```
 
 Comparer aussi la taille du CSV et celle d'une conversion en Parquet
@@ -65,10 +67,15 @@ d'internet sont compris entre 0 et 100.
 
 | Dans le projet | Pratique actuelle |
 |---|---|
-| `describe()`, `value_counts()`, missingno | Rapports automatiques : **ydata-profiling**, **skrub** (`TableReport`) |
+| `describe()`, `value_counts()`, missingno | Rapports automatiques : **skrub** (`TableReport`), ydata-profiling |
 
 Ces outils produisent en une ligne ce que la partie 1 fait à la main. Il faut savoir le faire à la main d'abord
 (c'est l'objectif du projet) ; ensuite, l'outil fait gagner du temps sur chaque nouveau jeu de données.
+Attention aux compatibilités : ydata-profiling ne s'installe pas avec pandas 3 (vérifié en janvier 2026), alors que
+skrub fonctionne.
+
+**Essayer** : `uv add --dev skrub`, puis `skrub.TableReport(pd.read_csv("../data/processed/pays_indicateurs.csv"))`
+dans un notebook, et comparer avec ce que la fiche 1 a demandé de calculer à la main.
 
 ## 5. Notebooks : versionnés, exécutables, relus
 
@@ -80,6 +87,9 @@ Ces outils produisent en une ligne ce que la partie 1 fait à la main. Il faut s
   Le notebook raconte, et le package calcule.
 - **jupytext** : chaque notebook a un jumeau `.py` lisible en *diff* dans une revue de code.
 - **marimo** : notebooks réactifs stockés en `.py` pur, sans état caché (l'ordre d'exécution ne peut pas mentir).
+
+**Essayer** : `uvx jupytext --to py:percent notebooks/projet_edstats_corrige.ipynb`, puis lire le `.py` obtenu :
+c'est ce qu'un relecteur verrait dans une revue de code.
 
 ## 6. De l'analyse au pipeline (le cœur du métier de Data Engineer)
 
@@ -114,6 +124,12 @@ classement obtenu à celui du corrigé.
   sont des méthodes formalisées. L'analyse de sensibilité aux poids (faite ici avec 1 000 tirages) reste
   indispensable quelle que soit la méthode.
 - **Valeurs extrêmes** : la règle de 1,5 × IQR, ou la MAD (écart absolu médian), plus robuste.
+- **Robustesse d'un classement** : au lieu d'une fréquence dans le top 10, donner pour chaque pays son rang médian
+  et un intervalle (5ᵉ-95ᵉ centile) sur les tirages de poids.
+
+**Essayer** : calculer le VIF des 15 indicateurs de `data/processed/pays_indicateurs.csv`
+(`statsmodels.stats.outliers_influence.variance_inflation_factor`, après `dropna()` et passage au log des
+indicateurs de taille), et comparer avec les 5 indicateurs gardés par le seuil de corrélation.
 
 ## 8. Visualisation et restitution
 
@@ -129,6 +145,10 @@ classement obtenu à celui du corrigé.
   référence classique est *Storytelling with Data* de Cole Nussbaumer Knaflic.
 - Pour un usage récurrent : un tableau de bord (Streamlit, Evidence, Superset) plutôt qu'un PowerPoint.
 
+**Essayer** : une carte du score avec Plotly (`uv add --dev plotly`),
+`px.choropleth(classement, locations=classement.index, color="score")` (les index sont déjà des codes pays ISO
+à 3 lettres).
+
 ## 9. L'IA générative dans le workflow data
 
 À ce stade du parcours, on déconseille à l'apprenant de faire écrire son code par une IA : le projet sert à
@@ -142,8 +162,12 @@ compétence attendue n'est donc pas « savoir s'en passer », mais **savoir vér
   sur la vraie matrice de corrélation, car l'index et les colonnes portaient le même nom. Le bug a été reproduit
   par un test avant d'être corrigé. Une IA, comme un humain, écrit du code plausible : **seuls les tests et les
   vérifications sur les vraies données disent s'il est juste**.
-- Les affirmations aussi se vérifient : plusieurs formulations des supports (« la Chine vaut 1 en min-max »,
-  « Pearson s'effondre ») ont été corrigées après comparaison avec les sorties réelles.
+- Les affirmations aussi se vérifient : plusieurs formulations des supports ont été corrigées après comparaison
+  avec les sorties réelles, puis lors d'une relecture par des agents spécialisés (pédagogie, statistique, data
+  engineering, product owner) qui ont recalculé les chiffres.
+
+**Essayer** (après le bilan) : demander à un assistant d'écrire la fonction de taux de remplissage de la partie 2,
+puis écrire soi-même 3 tests sur un mini-tableau dont on connaît la réponse. Le code proposé passe-t-il les tests ?
 
 ## 10. Intégration continue
 

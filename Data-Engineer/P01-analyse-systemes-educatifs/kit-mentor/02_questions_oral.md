@@ -52,12 +52,14 @@ métier **et** assez renseigné.
 
 **Comment as-tu choisi tes années ? Et ton seuil de remplissage ?**
 → Un graphique ou un tableau du remplissage par année, puis un seuil **argumenté** (« 60 % : en dessous, plus de
-40 % des pays n'auraient pas de valeur »).
+40 % des couples (pays, année) seraient vides »).
+🔁 « Si tu passes ton seuil de 60 % à 50 %, combien d'indicateurs gagnes-tu ? Lesquels t'intéressent ? »
 Un seuil « raisonnable » est un seuil justifié par une mesure et modifiable en un seul endroit, pas un seuil
 « juste ».
 
 **Pourquoi agréger pour ne plus être à la maille (pays, indicateur, année) ?**
 → Pour comparer des pays, il faut **une** valeur par pays et par indicateur.
+🚩 Un `groupby(...).mean()` sur toutes les colonnes d'années, projections comprises.
 
 **Moyenne ou médiane pour agréger les années ? Sur combien d'années au minimum ?**
 → Médiane : robuste à une année aberrante. Au moins 3 années, sinon la valeur n'est pas fiable.
@@ -65,6 +67,7 @@ Un seuil « raisonnable » est un seuil justifié par une mesure et modifiable e
 **Pourquoi le hardcoding fait-il perdre du temps ?**
 → Une valeur écrite en dur à plusieurs endroits doit être modifiée partout ; un index de ligne change dès qu'on trie
 ou filtre. Les paramètres se regroupent en tête du notebook.
+🔁 « Je te demande de passer de 2010-2014 à 2011-2015 : combien d'endroits de ton notebook modifies-tu ? »
 
 ## 3. Analyse (partie 3)
 
@@ -77,6 +80,10 @@ relation monotone et résiste aux extrêmes. Pour des populations ou des PIB tr�
 → L'une apporte presque la même information que l'autre. On garde la plus utile au métier, et on le **dit**.
 Question piège : « une corrélation de 0 veut-elle dire qu'il n'y a aucun lien ? » (non : pensez à une relation en U).
 
+**Si j'ajoute 10 pays sans valeur pour cet indicateur, quelles lignes de `describe()` changent ?**
+→ Aucune : `describe()` ignore les valeurs manquantes, `count` compris (il ne compte que les valeurs renseignées).
+C'est une façon de vérifier que l'apprenant a compris `count` sans lui faire réciter le tableau.
+
 **Explique chaque ligne de `describe()`.**
 → `count` = valeurs renseignées (et non le nombre total de lignes) ; quartiles = 25 / 50 / 75 % des pays en dessous ;
 moyenne ≫ médiane ⇒ asymétrie à droite.
@@ -87,9 +94,12 @@ moyenne ≫ médiane ⇒ asymétrie à droite.
 
 **Pourquoi écrire des fonctions ?**
 → Pour ne pas copier-coller : un seul endroit à corriger, un traitement identique pour tous, un code lisible.
+🔁 « Tu veux ajouter la médiane sur tes 5 histogrammes : combien de fois modifies-tu ton code ? »
 
 **Comment as-tu choisi tes pays ? Que se passe-t-il si on change tes poids ?**
 → Une méthode chiffrée (top-k communs, moyenne pondérée…). Les apprenants avancés testent la sensibilité aux poids.
+🚩 Additionner des critères d'unités différentes (population + pourcentage) sans normalisation.
+🔁 « Ton premier pays est-il premier parce qu'il est bon partout, ou parce qu'un seul critère l'écrase ? »
 
 **Ta recommandation dit-elle que l'internet *cause* le potentiel d'un pays ?**
 → Non : ce sont des associations. Le score trie, il ne prédit pas.
@@ -98,6 +108,8 @@ moyenne ≫ médiane ⇒ asymétrie à droite.
 
 **Raconte ta présentation en 3 phrases à quelqu'un qui ne connaît pas pandas.**
 → Le problème, ce que disent les données, la recommandation avec ses limites.
+🚩 Commencer par « j'ai importé pandas » ou dérouler le notebook cellule par cellule.
+🔁 « Quelle est la seule slide que Mark doit retenir ? »
 
 **Pourquoi `pyproject.toml` ? Que fait `uv sync` ? À quoi sert `uv.lock` ?**
 → `pyproject.toml` déclare les dépendances ; `uv.lock` fige les versions exactes ; `uv sync` recrée l'environnement à
