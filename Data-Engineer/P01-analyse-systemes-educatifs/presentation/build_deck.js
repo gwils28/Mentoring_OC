@@ -173,7 +173,7 @@ s = content("Données et démarche", "Trois hypothèses, toutes paramétrables",
 image(s, "remplissage_par_annee", { x: M, y: 1.95, w: 7.6, ratio: 2.473 });
 const hyp = [
   ["Années 2010-2014", "Après 2014, le remplissage s'effondre ; après 2017, ce sont des projections"],
-  ["Seuil de 60 %", "En dessous, un indicateur manque pour plus de 4 pays sur 10"],
+  ["Seuil de 60 %", "En dessous, plus de 4 couples (pays, année) sur 10 sont vides"],
   ["Médiane, ≥ 3 années", "Robuste à une année aberrante ; jamais une valeur isolée"],
 ];
 hyp.forEach(([k, v], i) => {
@@ -236,11 +236,13 @@ crit.forEach(([p, k, f, q, col], i) => {
   text(s, f, { x: x + 0.3, y: 3.65, w: 3.3, h: 0.6, fontSize: 14, italic: true, color: C.accent4, objectName: `critere-formule-${i}` });
   text(s, q, { x: x + 0.3, y: 4.35, w: 3.3, h: 1.1, fontSize: 14, color: C.text1, objectName: `critere-question-${i}` });
 });
-text(s, "Contrôle de robustesse : 1 000 jeux de poids tirés au hasard. Un pays recommandé doit rester dans le top 10 quels que soient nos choix.",
+text(s, "Robustesse : 1 000 jeux de poids tirés autour de 50/30/20, puis 1 000 tirés uniformément. Internet entre dans 2 critères : choix assumé et testé.",
   { x: M, y: 5.9, w: W - 2 * M, h: 0.6, fontSize: 14, color: C.text2, bold: true, objectName: "note-robustesse" });
 s.addNotes("Pourquoi des rangs ? Sinon le critère en millions de personnes écraserait le critère en pourcentage. " +
-  "Les poids sont un choix métier, assumé et affiché. Le test des 1 000 tirages vérifie que la recommandation " +
-  "ne dépend pas de ce choix.");
+  "Les poids sont un choix métier, assumé et affiché. Deux tests : poids tirés autour des nôtres (nos poids " +
+  "sont-ils fragiles ?) et tirés uniformément (le classement tient-il quelle que soit la stratégie ?). " +
+  "Internet compte dans la taille du marché et dans la maturité : sans lui dans la taille, 8 pays sur 10 du top " +
+  "restent les mêmes, le Nigeria et le Brésil entrent.");
 
 // ================================================================== 9. Carte
 pres.addSection({ title: "Recommandation" });
@@ -249,29 +251,33 @@ s = content("Recommandation", "Deux familles de marchés",
 image(s, "carte_marches", { x: 2.6, y: 1.8, w: 7.6, ratio: 1.499 });
 text(s, "Taille de bulle = marché connecté. Bleu = top 12 du score.", { x: 10.4, y: 2.0, w: 2.33, h: 1.2, fontSize: 13, color: C.accent4, objectName: "legende-carte" });
 text(s, "ρ = -0,66 entre maturité et dynamique", { x: 10.4, y: 3.4, w: 2.33, h: 1.0, fontSize: 16, bold: true, color: C.accent2, objectName: "stat-anticorrelation" });
-s.addNotes("La slide clé. En bas à droite : les marchés matures (Royaume-Uni, France, États-Unis, Allemagne, " +
-  "Japon), gros et solvables mais stables. En haut au centre : des marchés déjà connectés dont la cible grandit " +
+s.addNotes("La slide clé. En bas à droite : les marchés matures (Royaume-Uni, France, États-Unis, Russie, " +
+  "Allemagne, Japon), gros et solvables mais stables. En haut au centre : des marchés déjà connectés dont la cible grandit " +
   "vite (Maroc, Arabie saoudite, Mexique). En haut à gauche : le potentiel futur (Nigeria, Inde), avec un accès " +
   "encore limité. La Chine, énorme bulle grise, a une cible quasi stable d'ici 2030.");
 
 // ================================================================== 10. Recommandation
 s = content("Recommandation", "Notre recommandation à Mark",
-  "Commencer par deux marchés robustes, préparer la vague émergente, surveiller le potentiel futur");
+  "Deux marchés solides d'abord, puis un choix de stratégie : maturité ou croissance");
 s.addTable([
   [hdr("Priorité"), hdr("Pays"), hdr("Pourquoi"), hdr("Point d'attention")],
-  [{ text: "1 · Matures", options: { bold: true, color: C.accent1 } }, "Royaume-Uni, France, puis États-Unis, Allemagne, Japon",
+  [{ text: "1 · Matures", options: { bold: true, color: C.accent1 } }, "Royaume-Uni, France, puis États-Unis, Russie, Allemagne, Japon",
     "Gros marché connecté et solvable", "Cible stable d'ici 2030 ; forte concurrence"],
-  [{ text: "2 · Émergents connectés", options: { bold: true, color: C.accent2 } }, "Maroc, Arabie saoudite, Espagne, Mexique, Émirats",
+  [{ text: "2 · Connectés en croissance", options: { bold: true, color: C.accent2 } }, "Maroc, Arabie saoudite, Espagne, Mexique, Émirats",
     "Déjà connectés, cible en forte croissance", "Pouvoir d'achat plus hétérogène"],
   [{ text: "3 · Potentiel futur", options: { bold: true, color: C.accent4 } }, "Nigeria, Inde, Égypte",
     "Cible en très forte croissance", "Accès à internet limité (données 2014)"],
 ], { x: M, y: 1.95, w: 8.3, colW: [1.9, 2.5, 2.0, 1.9], fontSize: 13, color: C.text1,
   border: { type: "solid", pt: 0.75, color: "C9D9EA" }, valign: "middle", rowH: 0.95, objectName: "table-recommandation" });
 image(s, "robustesse_poids", { x: 9.15, y: 1.95, w: 3.58, ratio: 1.992 });
-stat(s, { x: 9.15, y: 4.0, w: 3.58, value: "74 % · 59 %", label: "des jeux de poids placent le Royaume-Uni et la France dans le top 10", name: "stat-robustesse" });
-s.addNotes("Seuls le Royaume-Uni et la France résistent à plus de la moitié des jeux de poids : c'est la " +
-  "recommandation ferme. Le reste dépend de la stratégie : solvabilité immédiate ou croissance. Cette décision " +
-  "appartient à Mark, pas aux données. Les deux pays robustes sont francophone et anglophone : vérifier la langue " +
+text(s, "Russie : 4ᵉ selon les données ; l'écarter ou non est une décision hors données (géopolitique, réglementation, paiement).",
+  { x: M, y: 5.95, w: 8.3, h: 0.5, fontSize: 13, italic: true, color: C.accent4, objectName: "note-russie" });
+stat(s, { x: 9.15, y: 4.0, w: 3.58, value: "74 % · 59 %", label: "Royaume-Uni et France : part des tirages uniformes où ils sont dans le top 10 (autour de nos poids : 8 pays à ≥ 89 %)", name: "stat-robustesse" });
+s.addNotes("Autour de nos poids, 8 pays sont stables : la recommandation ne tient pas à un réglage fin. Si l'on " +
+  "change de stratégie (tirage uniforme), seuls le Royaume-Uni et la France restent dans le top 10 plus d'une fois " +
+  "sur deux : c'est la recommandation ferme. Le reste dépend de la stratégie, solvabilité immédiate ou croissance, " +
+  "et cette décision appartient à Mark, pas aux données. La Russie est 4ᵉ selon les données ; des critères hors " +
+  "données (géopolitique, réglementation, paiement) peuvent justifier de l'écarter, à dire comme tel. Les deux pays robustes sont francophone et anglophone : vérifier la langue " +
   "des contenus d'academy.");
 
 // ================================================================== 11. Limites
