@@ -22,7 +22,10 @@ done < <(git -c core.quotePath=false status --porcelain -z --untracked-files=all
 echecs=""
 for p in "${!projets[@]}"; do
   [[ -f "$p/pyproject.toml" ]] || continue
-  if ! sortie=$(cd "$p" && uv run --quiet pytest -q 2>&1); then
+  sortie=$(cd "$p" && uv run --quiet pytest -q 2>&1)
+  code=$?
+  # 5 = aucun test collecté (projet tout juste initialisé) : rien à prouver, pas un échec
+  if (( code != 0 && code != 5 )); then
     echecs+=$'\n'"### $p"$'\n'"$(tail -n 25 <<<"$sortie")"
   fi
 done
