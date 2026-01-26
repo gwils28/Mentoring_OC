@@ -1,0 +1,44 @@
+[project]
+name = "dataimmo"
+version = "0.1.0"
+description = "Base de données relationnelle DATAImmo (DVF 1er semestre 2020) pour Laplace Immo — corrigé et supports de mentorat OpenClassrooms"
+readme = "README.md"
+authors = [
+    { name = "wilson goma", email = "10559068+gwils28@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl>=3.1.5",
+    "pandas>=3.1.0",
+]
+
+[project.scripts]
+dataimmo-build = "dataimmo.build:main"
+
+[build-system]
+requires = ["uv_build>=0.12.22,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.4",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+    "seaborn>=0.13.2",
+]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# table de données : une entrée du dictionnaire par appel, plus lisible sur une ligne longue
+"src/dataimmo/dictionnaire.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
