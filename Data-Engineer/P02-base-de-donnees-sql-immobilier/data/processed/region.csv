@@ -1,0 +1,20 @@
+id_region,nom_region,nom_regroupement
+00,Collectivités d'outre-mer,DROM-COM
+01,Guadeloupe,DROM-COM
+02,Martinique,DROM-COM
+03,Guyane,DROM-COM
+04,La Réunion,DROM-COM
+06,Mayotte,DROM-COM
+11,Ile-de-France,Ile-de-France
+24,Centre-Val de Loire,Province
+27,Bourgogne-Franche-Comté,Province
+28,Normandie,Province
+32,Hauts-de-France,Province
+44,Grand Est,Province
+52,Pays de la Loire,Province
+53,Bretagne,Province
+75,Nouvelle-Aquitaine,Province
+76,Occitanie,Province
+84,Auvergne-Rhône-Alpes,Province
+93,Provence-Alpes-Côte d'Azur,Province
+94,Corse,Province
