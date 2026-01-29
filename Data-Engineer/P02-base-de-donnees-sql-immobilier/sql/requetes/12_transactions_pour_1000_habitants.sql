@@ -12,5 +12,5 @@ INNER JOIN bien    AS b ON b.id_bien = v.id_bien
 INNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune
 WHERE c.population > 10000
 GROUP BY c.id_codedep_codecommune, c.nom_commune, c.code_departement, c.population
-ORDER BY ventes_pour_1000_hab DESC
+ORDER BY COUNT(*) * 1.0 / c.population DESC   -- trier sur la valeur exacte, pas sur l'arrondi
 LIMIT 20;

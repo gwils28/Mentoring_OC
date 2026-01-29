@@ -5,7 +5,7 @@ WITH moyenne_par_commune AS (
     SELECT
         c.code_departement,
         c.nom_commune,
-        ROUND(AVG(v.valeur_fonciere), 0) AS valeur_moyenne,
+        AVG(v.valeur_fonciere) AS valeur_moyenne,     -- arrondie seulement à l'affichage
         COUNT(*) AS nb_ventes
     FROM vente AS v
     INNER JOIN bien    AS b ON b.id_bien = v.id_bien
@@ -20,7 +20,7 @@ classement AS (
         RANK() OVER (PARTITION BY code_departement ORDER BY valeur_moyenne DESC) AS rang
     FROM moyenne_par_commune
 )
-SELECT code_departement, rang, nom_commune, valeur_moyenne, nb_ventes
+SELECT code_departement, rang, nom_commune, ROUND(valeur_moyenne, 0) AS valeur_moyenne, nb_ventes
 FROM classement
 WHERE rang <= 3
 ORDER BY code_departement, rang;

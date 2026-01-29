@@ -10,5 +10,5 @@ INNER JOIN bien    AS b ON b.id_bien = v.id_bien
 INNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune
 WHERE v.valeur_fonciere IS NOT NULL
 GROUP BY c.code_departement
-ORDER BY prix_m2_moyen DESC
+ORDER BY AVG(v.valeur_fonciere / b.surface_carrez) DESC   -- trier sur la valeur exacte, pas sur l'arrondi
 LIMIT 10;
