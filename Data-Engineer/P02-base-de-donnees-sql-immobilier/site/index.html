@@ -1,0 +1,366 @@
+<title>Carnet DATAImmo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@500;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : une colonne de lecture (~70ch) ; les « labos » s'élargissent en deux colonnes, qui s'empilent sur mobile */
+:root {
+  --bg: #f7f9fb; --surface: #ffffff; --surface-2: #eef3f8; --ink: #14212e; --ink-2: #4a5866; --line: #d8e1ea;
+  --accent: #2a78d6; --accent-ink: #1f5fae; --warm: #c4521f; --warm-soft: #fbe3d7; --good: #0f7a3d; --bad: #b42d2d;
+  --code-bg: #e9eff5;
+  --display: "Domine", Georgia, serif; --body: "Nunito Sans", "Segoe UI", Arial, sans-serif; --mono: "JetBrains Mono", "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1923; --surface: #16232f; --surface-2: #1c2d3c; --ink: #e8eef4; --ink-2: #a9b8c6; --line: #2a3d4f;
+  --accent: #5598e7; --accent-ink: #86b6ef; --warm: #ec835a; --warm-soft: #3a2519; --good: #4cc07a; --bad: #ef7b7b;
+  --code-bg: #1f3244; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1923; --surface: #16232f; --surface-2: #1c2d3c; --ink: #e8eef4; --ink-2: #a9b8c6; --line: #2a3d4f;
+  --accent: #5598e7; --accent-ink: #86b6ef; --warm: #ec835a; --warm-soft: #3a2519; --good: #4cc07a; --bad: #ef7b7b;
+  --code-bg: #1f3244; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: flex; flex-direction: column; gap: 64px; }
+h1, h2, h3 { font-family: var(--display); color: var(--ink); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.15rem; }
+p { margin: 0; max-width: 68ch; }
+code, .code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+a { color: var(--accent-ink); }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.lede { font-size: 1.15rem; color: var(--ink-2); }
+section { display: flex; flex-direction: column; gap: 20px; }
+.muted { color: var(--ink-2); }
+button, input, select { font: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête */
+header.hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: end; }
+.brief { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.brief .from { font-size: .85rem; color: var(--ink-2); }
+.brief p { font-size: .98rem; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: .95rem; }
+.facts b { font-family: var(--mono); font-weight: 600; }
+
+/* Étapes */
+.steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.step { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer; color: var(--ink); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.step .n { font-family: var(--mono); font-size: .8rem; color: var(--ink-2); }
+.step .t { font-weight: 700; line-height: 1.25; }
+.step[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step[aria-selected="true"] .n { color: #fff; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; }
+.panel ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+.panel .side { display: flex; flex-direction: column; gap: 14px; }
+.callout { border-radius: 10px; padding: 12px 14px; font-size: .95rem; }
+.callout.trap { background: var(--warm-soft); }
+.callout.ask { background: var(--surface-2); }
+.callout b { display: block; margin-bottom: 2px; }
+
+/* Entonnoir */
+.funnel { display: flex; flex-direction: column; gap: 8px; }
+.frow { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 12px; align-items: center; }
+.frow .v { font-family: var(--mono); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.bar { height: 30px; border-radius: 0 6px 6px 0; background: var(--accent); display: flex; align-items: center; padding-left: 10px; color: #fff; font-size: .88rem; white-space: nowrap; overflow: visible; min-width: 4px; }
+.bar.last { background: var(--warm); }
+.bar span { color: var(--ink); padding-left: 8px; margin-left: 100%; }
+.frow .lab { font-size: .92rem; color: var(--ink-2); }
+
+/* Labos */
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+.lab .controls { display: flex; flex-direction: column; gap: 16px; }
+.lab canvas { width: 100%; height: auto; aspect-ratio: 4 / 3; max-width: 100%; background: var(--surface-2); border-radius: 10px; }
+.slider { display: flex; flex-direction: column; gap: 4px; }
+.slider label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size: .95rem; }
+.slider output { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.coefs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.coef { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+.coef .k { font-size: .82rem; color: var(--ink-2); }
+.coef .val { font-family: var(--mono); font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+.toggle button { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.verdict { font-size: .95rem; }
+
+/* Classement */
+table.rank { width: 100%; border-collapse: collapse; font-size: .93rem; }
+table.rank th, table.rank td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+table.rank th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
+table.rank td.num { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.chip.in { background: var(--accent); color: #fff; }
+.chip.new { background: var(--warm); color: #fff; }
+.table-scroll { overflow-x: auto; }
+.reset { align-self: flex-start; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+
+/* Quiz */
+.quiz { display: flex; flex-direction: column; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.q .opts { display: flex; flex-direction: column; gap: 6px; }
+.q button.opt { text-align: left; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.q button.opt.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--surface)); }
+.q button.opt.ko { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--surface)); }
+.q .why { font-size: .95rem; color: var(--ink-2); }
+.score { font-family: var(--mono); font-weight: 600; }
+
+/* Check-list */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.checklist label { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+.checklist input { margin-top: .3em; accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
+footer { font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 760px) {
+  header.hero, .panel, .lab { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .frow { grid-template-columns: 4.2rem minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) { .bar { transition: width .4s ease; } }
+</style>
+<style>
+/* Ajouts propres à la page P02 */
+.colonnes { display: flex; flex-direction: column; gap: 8px; }
+.colonne { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--surface-2); border-radius: 10px; padding: 8px 12px; }
+.colonne .nom { font-family: var(--mono); font-size: .9rem; min-width: 0; overflow-wrap: anywhere; }
+.colonne select { font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; background: var(--surface); color: var(--ink); }
+.colonne.ok { box-shadow: inset 4px 0 0 var(--good); }
+.colonne.ko { box-shadow: inset 4px 0 0 var(--bad); }
+.colonne .why { grid-column: 1 / -1; font-size: .9rem; color: var(--ink-2); }
+.mini-tables { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mini-tables table { width: 100%; border-collapse: collapse; font-size: .85rem; font-family: var(--mono); }
+.mini-tables caption { text-align: left; font-family: var(--body); font-weight: 700; padding-bottom: 4px; }
+.mini-tables th, .mini-tables td { border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: left; }
+.prediction { display: grid; grid-template-columns: minmax(0, 1fr) 6rem auto; gap: 10px; align-items: center; }
+.prediction input { font: inherit; width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; background: var(--surface); color: var(--ink); }
+.prediction .res { font-size: .9rem; }
+.action { align-self: flex-start; justify-self: start; border: 0; background: var(--accent); color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
+@media (max-width: 760px) { .mini-tables { grid-template-columns: minmax(0, 1fr); } .prediction { grid-template-columns: minmax(0, 1fr) 5rem; } .prediction .res { grid-column: 1 / -1; } }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <span class="eyebrow">OpenClassrooms · Data Engineer · Projet 2</span>
+    <h1>Entraînez-vous avec SQL et créez votre BDD</h1>
+    <p class="lede">Votre carnet de bord : les trois étapes du projet, les pièges à éviter, deux labos pour manipuler les notions clés, un quiz et la check-list des livrables.</p>
+    <div class="facts">
+      <span><b>3</b> fichiers Excel</span><span><b>4</b> tables à concevoir</span><span><b>12</b> besoins métier</span><span><b>~60 h</b> de travail</span>
+    </div>
+  </div>
+  <aside class="brief" aria-label="La demande de l'entreprise">
+    <span class="from">Votre mission chez Laplace Immo</span>
+    <p>« Nous voulons une base de données des ventes immobilières du 1er semestre 2020, propre et conforme au RGPD, pour répondre aux questions de la direction : volumes de ventes, prix au mètre carré, classements par région et par commune. C'est un test : si ça marche, on chargera les années précédentes. »</p>
+    <p class="muted" style="font-size:.9rem">Livrables : un dictionnaire des données (tableur) et une présentation avec vos requêtes SQL et leurs résultats.</p>
+  </aside>
+</header>
+
+<section id="etapes" aria-labelledby="t-etapes">
+  <span class="eyebrow">Le parcours</span>
+  <h2 id="t-etapes">Trois étapes, dans cet ordre</h2>
+  <div class="steps" role="tablist" aria-label="Étapes du projet" id="steps" style="grid-template-columns:repeat(3,minmax(0,1fr))"></div>
+  <div class="panel" role="tabpanel" id="panel" aria-live="polite"></div>
+</section>
+
+<section id="labo-normaliser" aria-labelledby="t-norm">
+  <span class="eyebrow">Labo 1 · modéliser</span>
+  <h2 id="t-norm">Rangez chaque colonne dans la bonne table</h2>
+  <p class="muted">Voici des colonnes du fichier des valeurs foncières et des deux autres fichiers. Pour chacune, choisissez la table où elle doit vivre dans une base en 3ᵉ forme normale, ou « ne pas garder ». Puis vérifiez.</p>
+  <div class="lab" style="grid-template-columns:minmax(0,1fr)">
+    <div class="colonnes" id="colonnes"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="action" id="verifier">Vérifier mes choix</button>
+      <span class="score" id="score-norm" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<section id="labo-jointure" aria-labelledby="t-join">
+  <span class="eyebrow">Labo 2 · interroger</span>
+  <h2 id="t-join">Prédisez le nombre de lignes d'une jointure</h2>
+  <p class="muted">Mini-base inventée pour l'exercice. Une commune a été « perdue » à l'import (la Corse, comme lorsque le code 2A est lu comme un nombre). Avant de vérifier, écrivez combien de lignes chaque requête va renvoyer.</p>
+  <div class="lab" style="grid-template-columns:minmax(0,1fr)">
+    <div class="mini-tables" id="mini-tables"></div>
+    <div class="colonnes" id="predictions"></div>
+    <button type="button" class="action" id="verifier-join">Vérifier mes prédictions</button>
+    <p class="verdict" id="verdict-join"></p>
+  </div>
+</section>
+
+<section id="quiz" aria-labelledby="t-quiz">
+  <span class="eyebrow">Avant la séance bilan</span>
+  <h2 id="t-quiz">Quiz : êtes-vous prêt à défendre votre base ?</h2>
+  <p class="muted">Le type de questions que votre mentor vous posera. Score : <span class="score" id="quiz-score">0 / 0</span></p>
+  <div class="quiz" id="quiz-list"></div>
+</section>
+
+<section id="checklist" aria-labelledby="t-check">
+  <span class="eyebrow">Avant de déposer</span>
+  <h2 id="t-check">Check-list des livrables</h2>
+  <p class="muted">Vos coches sont gardées dans ce navigateur uniquement.</p>
+  <div class="checklist" id="check-list"></div>
+</section>
+
+<footer>
+  Page préparée par votre mentor pour le projet « Entraînez-vous avec SQL et créez votre BDD ». Données : demandes de valeurs foncières (DVF) et référentiels INSEE, fichiers fournis par OpenClassrooms. La mini-base du labo 2 est inventée.
+</footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------- étapes
+const ETAPES = [
+  { t: "Comprendre et modéliser", faire: ["Dire ce que représente une ligne de chaque fichier", "Choisir les colonnes utiles aux 12 besoins, et seulement elles", "Remplir le dictionnaire : code, signification, type, longueur, nature, règle de gestion, règle de calcul", "Dessiner le schéma : tables, clés primaires, clés étrangères, en 3ᵉ forme normale"],
+    piege: "Typer un code comme un nombre : « 01 » devient 1 et la Corse (2A, 2B) disparaît. Et le code postal n'identifie pas une commune.",
+    mentor: "« Pourquoi as-tu gardé (ou supprimé) cette colonne ? »", fiche: "fiches 1 à 4" },
+  { t: "Créer et charger", faire: ["Créer les tables dans SQLite Studio (types, clés, contraintes)", "Préparer un CSV par table : colonnes dans l'ordre de la table, clés uniques, encodage UTF-8", "Importer, puis activer les clés étrangères : <code>PRAGMA foreign_keys = ON;</code>", "Comparer le nombre de lignes de chaque CSV et de chaque table"],
+    piege: "Une cellule vide importée comme texte vide (<code>''</code>) au lieu de <code>NULL</code> : la moyenne la compte comme 0.",
+    mentor: "« Démontre que tu n'as perdu aucune ligne. »", fiche: "fiche 5" },
+  { t: "Interroger et présenter", faire: ["Décomposer chaque besoin avant d'écrire : quoi, sur quelles lignes, par quoi, dans quel ordre", "Une requête par besoin, avec des alias clairs", "Au moins une sous-requête ou une CTE", "Commenter chaque résultat en une phrase métier"],
+    piege: "Filtrer un compte avec <code>WHERE</code> au lieu de <code>HAVING</code>, ou classer des moyennes calculées sur 2 ventes.",
+    mentor: "« Que dirais-tu au directeur de ce résultat ? »", fiche: "fiches 6 à 9 et « présenter un résultat »" },
+];
+const stepsEl = document.getElementById("steps"), panelEl = document.getElementById("panel");
+function showStep(i) {
+  [...stepsEl.children].forEach((b, j) => { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
+  const e = ETAPES[i];
+  panelEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;min-width:0"><h3>${e.t}</h3><ul>${e.faire.map(f => `<li>${f}</li>`).join("")}</ul>
+    <p class="muted" style="font-size:.92rem">Pour revoir les notions : ${e.fiche}</p></div>
+    <div class="side"><div class="callout trap"><b>Piège classique</b>${e.piege}</div><div class="callout ask"><b>Votre mentor demandera</b>${e.mentor}</div></div>`;
+}
+ETAPES.forEach((e, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "step"; b.setAttribute("role", "tab");
+  b.innerHTML = `<span class="n">étape ${i + 1}</span><span class="t">${e.t}</span>`;
+  b.addEventListener("click", () => showStep(i));
+  b.addEventListener("keydown", ev => {
+    if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+      const j = (i + (ev.key === "ArrowRight" ? 1 : ETAPES.length - 1)) % ETAPES.length;
+      showStep(j); stepsEl.children[j].focus();
+    }
+  });
+  stepsEl.appendChild(b);
+});
+showStep(0);
+
+// ---------------------------------------------------------------- labo 1 : normaliser
+const TABLES = ["— choisir —", "vente", "bien", "commune", "région", "ne pas garder"];
+const COLONNES = [
+  ["Date mutation", ["vente"], "La date décrit l'événement « vente » : un même bien peut être revendu à une autre date."],
+  ["Valeur fonciere", ["vente"], "Le prix est celui d'une vente donnée, pas une caractéristique permanente du bien."],
+  ["Type local", ["bien"], "Appartement ou maison : une caractéristique du bien, qui ne change pas à chaque vente."],
+  ["Nombre pieces principales", ["bien"], "Caractéristique du bien."],
+  ["Surface Carrez du 1er lot", ["bien"], "Caractéristique du bien (attention : elle ne couvre que le 1er lot)."],
+  ["Voie", ["bien"], "Élément de l'adresse du bien (1re forme normale : adresse découpée en colonnes)."],
+  ["Code postal", ["bien", "commune"], "Les deux se défendent : dans « bien », chaque adresse garde son code ; dans « commune », il faut n'en garder qu'un, alors qu'une ville comme Nice en a plusieurs. Sachez justifier votre choix."],
+  ["Nom de la commune", ["commune"], "Le nom dépend de la commune, pas du bien : le stocker dans « bien » le répéterait des milliers de fois (3ᵉ forme normale)."],
+  ["Population", ["commune"], "Une donnée de la commune, qui sert à rapporter les ventes au nombre d'habitants."],
+  ["Nom de la région", ["région"], "Dépend de la région, pas de la commune : une seule fois dans la table « région »."],
+  ["Nom de l'acquéreur", ["ne pas garder"], "Donnée personnelle, inutile pour les besoins d'analyse : on la supprime (RGPD)."],
+  ["No Volume", ["ne pas garder"], "Colonne entièrement vide dans le fichier : rien à garder."],
+];
+const colonnesEl = document.getElementById("colonnes");
+colonnesEl.innerHTML = COLONNES.map(([nom], i) => `<div class="colonne" id="col-${i}"><label class="nom" for="sel-${i}">${nom}</label>
+  <select id="sel-${i}">${TABLES.map(t => `<option>${t}</option>`).join("")}</select><p class="why" hidden></p></div>`).join("");
+document.getElementById("verifier").addEventListener("click", () => {
+  let bons = 0;
+  COLONNES.forEach(([, ok, why], i) => {
+    const choix = document.getElementById(`sel-${i}`).value, ligne = document.getElementById(`col-${i}`), p = ligne.querySelector(".why");
+    const juste = ok.includes(choix);
+    if (juste) bons++;
+    ligne.classList.toggle("ok", juste); ligne.classList.toggle("ko", !juste);
+    p.hidden = false; p.textContent = (juste ? "✓ " : "✗ Réponse attendue : " + ok.join(" ou ") + ". ") + why;
+  });
+  document.getElementById("score-norm").textContent = `${bons} / ${COLONNES.length}`;
+});
+
+// ---------------------------------------------------------------- labo 2 : jointures
+const VENTES = [[1, 1, "2020-01-03"], [2, 2, "2020-01-15"], [3, 3, "2020-02-01"], [4, 4, "2020-02-20"], [5, 5, "2020-03-05"]];
+const BIENS = [[1, "34172", "Appartement"], [2, "34172", "Maison"], [3, "06088", "Appartement"], [4, "2A004", "Appartement"], [5, "2A004", "Maison"]];
+const COMMUNES = [["34172", "Montpellier"], ["06088", "Nice"], ["69123", "Lyon"]];  // 2A004 (Ajaccio) perdue à l'import
+const table = (titre, entetes, lignes) => `<table><caption>${titre}</caption><thead><tr>${entetes.map(e => `<th>${e}</th>`).join("")}</tr></thead>
+  <tbody>${lignes.map(l => `<tr>${l.map(v => `<td>${v}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+document.getElementById("mini-tables").innerHTML =
+  table("vente", ["id_vente", "id_bien", "date"], VENTES) +
+  table("bien", ["id_bien", "commune", "type"], BIENS) +
+  table("commune", ["id", "nom"], COMMUNES);
+const codes = new Set(COMMUNES.map(c => c[0]));
+const QUESTIONS_JOIN = [
+  ["SELECT * FROM vente JOIN bien USING (id_bien)", VENTES.length, "Chaque vente a exactement un bien : autant de lignes que de ventes."],
+  ["… INNER JOIN commune (biens avec leur commune)", BIENS.filter(b => codes.has(b[1])).length, "Les 2 biens d'Ajaccio n'ont pas de commune correspondante : l'INNER JOIN les supprime, sans aucune erreur."],
+  ["… LEFT JOIN commune (biens avec leur commune)", BIENS.length, "Le LEFT JOIN garde tous les biens ; ceux d'Ajaccio ont un nom de commune vide (NULL)."],
+  ["… LEFT JOIN commune … WHERE commune.id IS NULL", BIENS.filter(b => !codes.has(b[1])).length, "C'est la requête qui trouve les « orphelins » : les biens dont la commune manque."],
+  ["SELECT * FROM commune LEFT JOIN bien …", BIENS.filter(b => codes.has(b[1])).length + COMMUNES.filter(c => !BIENS.some(b => b[1] === c[0])).length, "3 biens rattachés à Montpellier et Nice, plus Lyon qui n'a aucun bien (une ligne avec un bien vide) : 4 lignes."],
+];
+document.getElementById("predictions").innerHTML = QUESTIONS_JOIN.map(([q], i) => `<div class="prediction">
+  <label for="pred-${i}"><code>${q}</code></label><input id="pred-${i}" type="number" min="0" inputmode="numeric" placeholder="?"><span class="res" id="res-${i}"></span></div>`).join("");
+document.getElementById("verifier-join").addEventListener("click", () => {
+  let bons = 0;
+  QUESTIONS_JOIN.forEach(([, attendu, why], i) => {
+    const v = document.getElementById(`pred-${i}`).value, juste = v !== "" && +v === attendu;
+    if (juste) bons++;
+    document.getElementById(`res-${i}`).textContent = (juste ? "✓ " : `✗ ${attendu} lignes. `) + why;
+  });
+  document.getElementById("verdict-join").textContent = `${bons} / ${QUESTIONS_JOIN.length} prédictions justes. Réflexe à garder : prédire, puis vérifier avec COUNT(*). Une jointure qui perd des lignes ne prévient jamais.`;
+});
+
+// ---------------------------------------------------------------- quiz
+const QUIZ = [
+  ["Dans le fichier des valeurs foncières, une ligne représente…", ["une commune", "une vente d'un bien", "un acheteur"], 1,
+   "Chaque ligne est une mutation : une vente, à une date, pour un prix."],
+  ["Quel type pour la colonne « code département » ?", ["INTEGER : c'est un numéro", "TEXT : « 2A », « 01 » et « 971 » doivent rester intacts", "REAL"], 1,
+   "Un code n'est pas un nombre : en entier, « 01 » devient 1, « 2A » reste du texte dans une colonne de nombres, et les clés ne correspondent plus : les jointures perdent des ventes sans prévenir."],
+  ["Pourquoi le code postal ne peut-il pas être la clé de la table des communes ?", ["Parce qu'il est trop long", "Parce qu'un même code postal peut couvrir plusieurs communes", "Il peut l'être sans problème"], 1,
+   "05100 couvre Briançon, Montgenèvre et Névache : une clé doit être unique. On combine code département et code commune."],
+  ["Le nom de la région est-il répété dans la table des communes, dans un schéma en 3ᵉ forme normale ?", ["Oui, c'est plus pratique pour les requêtes", "Non : la commune garde seulement le code de sa région", "Oui, mais en majuscules"], 1,
+   "Le nom dépend du code région, pas de la commune : le répéter crée des contradictions possibles. Une jointure le retrouve."],
+  ["Que faire de la colonne « Nom de l'acquéreur » ?", ["La garder, elle est dans le fichier fourni", "La supprimer : donnée personnelle, inutile aux besoins", "La garder en majuscules"], 1,
+   "Le RGPD n'autorise que les données nécessaires. Aucun besoin ne porte sur l'acheteur : on anonymise en supprimant la colonne."],
+  ["Votre table « vente » contient 33 918 lignes au lieu de 34 169. Cause la plus probable ?", ["Un bug de SQLite", "Des lignes perdues à l'import, par exemple la Corse lue comme un nombre", "Des doublons supprimés automatiquement"], 1,
+   "251 ventes de Corse disparaissent quand le code 2A ne passe pas dans une colonne numérique. D'où le réflexe : compter des deux côtés."],
+  ["Vous voulez les communes avec au moins 50 ventes. Le filtre « au moins 50 » va dans…", ["WHERE", "HAVING", "ORDER BY"], 1,
+   "WHERE filtre les lignes avant le regroupement ; HAVING filtre les groupes, une fois COUNT(*) calculé."],
+  ["SELECT COUNT(*) * 100 / 34169 FROM … renvoie 0 alors que vous attendiez 8 %. Pourquoi ?", ["La requête est vide", "Division entière : multiplier par 100.0", "SQLite ne sait pas calculer de pourcentage"], 1,
+   "Un entier divisé par un entier donne un entier en SQL. 100.0 force un calcul décimal."],
+  ["Votre classement place une région 2ᵉ « la plus chère » avec une moyenne calculée sur 2 ventes. Que dites-vous au directeur ?", ["Qu'elle est 2ᵉ, c'est le résultat", "Que l'effectif est trop faible pour la classer, et vous affichez le nombre de ventes", "Rien, vous la retirez sans le dire"], 1,
+   "Un chiffre sans son effectif ne se compare pas. Le dire est une preuve de rigueur, le cacher ne l'est pas."],
+];
+const quizEl = document.getElementById("quiz-list"); let answered = 0, good = 0;
+const updScore = () => document.getElementById("quiz-score").textContent = `${good} / ${answered} (sur ${QUIZ.length})`;
+QUIZ.forEach(([q, opts, ok, why], qi) => {
+  const box = document.createElement("div"); box.className = "q";
+  box.innerHTML = `<h3>${qi + 1}. ${q}</h3><div class="opts">${opts.map((o, i) => `<button type="button" class="opt" data-i="${i}">${o}</button>`).join("")}</div><p class="why" hidden></p>`;
+  box.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    if (box.dataset.done) return; box.dataset.done = "1";
+    const i = +b.dataset.i; answered++; if (i === ok) good++;
+    box.querySelectorAll(".opt")[ok].classList.add("ok"); if (i !== ok) b.classList.add("ko");
+    const w = box.querySelector(".why"); w.hidden = false; w.textContent = (i === ok ? "✓ Exact. " : "✗ Pas tout à fait. ") + why;
+    updScore();
+  }));
+  quizEl.appendChild(box);
+});
+updScore();
+
+// ---------------------------------------------------------------- check-list
+const CHECK = [
+  "Mon dictionnaire a les 7 colonnes remplies, et une règle de calcul pour chaque donnée calculée ou concaténée",
+  "Le nom de l'acquéreur n'apparaît ni dans le dictionnaire, ni dans la base",
+  "Tous mes codes (département, commune, postal, région) sont en texte",
+  "Mon schéma montre les clés primaires et étrangères ; je sais justifier chaque clé",
+  "Mes CSV sont en UTF-8, avec les colonnes dans l'ordre des tables",
+  "J'ai comparé le nombre de lignes de chaque CSV et de chaque table (capture dans la présentation)",
+  "J'ai une requête et un résultat pour chacun des 12 besoins, avec des alias lisibles",
+  "Chaque résultat est commenté en une phrase compréhensible par le directeur",
+  "Je sais exécuter mes requêtes en direct et en modifier une (autre trimestre, autre département)",
+  "Fichiers nommés Nom_Prenom_n°_livrable_mmaaaa, dans un zip",
+];
+let saved = {}; try { saved = JSON.parse(localStorage.getItem("p02-check") || "{}"); } catch (e) { saved = {}; }
+document.getElementById("check-list").innerHTML = CHECK.map((c, i) =>
+  `<label for="c${i}"><input type="checkbox" id="c${i}" ${saved[i] ? "checked" : ""}><span>${c}</span></label>`).join("");
+document.getElementById("check-list").addEventListener("change", e => {
+  saved[e.target.id.slice(1)] = e.target.checked;
+  try { localStorage.setItem("p02-check", JSON.stringify(saved)); } catch (err) { /* stockage indisponible : la page marche sans */ }
+});
+</script>
