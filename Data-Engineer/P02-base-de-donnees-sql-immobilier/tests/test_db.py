@@ -138,3 +138,23 @@ def test_failed_build_leaves_no_half_built_database(tmp_path, tables):
     with pytest.raises(sqlite3.IntegrityError):
         create_database(path, tables, csv_dir=tmp_path)
     assert not path.exists()
+
+
+def test_schema_refuse_texte_vide_et_date_impossible():
+    # Pièges d'import : un champ vide chargé en '' et une date au bon format mais impossible
+    import sqlite3
+
+    from dataimmo.io import PROJECT_DIR
+
+    base = sqlite3.connect(":memory:")
+    base.executescript((PROJECT_DIR / "sql" / "schema.sql").read_text(encoding="utf-8"))
+    base.executescript("""
+        INSERT INTO region VALUES ('11', 'Ile-de-France', 'Ile-de-France');
+        INSERT INTO commune VALUES ('75101', '11', '75', '101', 'Paris 1er', 15917);
+        INSERT INTO bien (id_bien, id_codedep_codecommune, voie, type_local)
+            VALUES (1, '75101', 'RIVOLI', 'Appartement');
+    """)
+    for valeurs in [(1, 1, "2020-01-02", "", 1), (2, 1, "2020-13-45", 100000.0, 1)]:
+        with pytest.raises(sqlite3.IntegrityError):
+            base.execute("INSERT INTO vente VALUES (?, ?, ?, ?, ?)", valeurs)
+    base.execute("INSERT INTO vente VALUES (3, 1, '2020-01-02', NULL, 1)")  # NULL reste accepté

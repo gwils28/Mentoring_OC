@@ -1,6 +1,7 @@
 -- Schéma de la base DATAImmo (SQLite) : region <- commune <- bien <- vente
 -- Une flèche = une clé étrangère : chaque vente porte sur un bien, situé dans une commune, rattachée à une région.
--- Le DDL reste compatible PostgreSQL (types TEXT / INTEGER / REAL, contraintes standard).
+-- Le DDL est écrit pour SQLite. Pour PostgreSQL, il faut l'adapter (NUMERIC au lieu de REAL pour les montants,
+-- type DATE, CHECK sans typeof()) : voir ALLER_PLUS_LOIN.md, section 1.
 
 -- SQLite ignore les clés étrangères tant qu'on ne les active pas (réglage valable pour la connexion en cours).
 PRAGMA foreign_keys = ON;
@@ -39,7 +40,8 @@ CREATE TABLE bien (
 CREATE TABLE vente (
     id_vente        INTEGER PRIMARY KEY,
     id_bien         INTEGER NOT NULL UNIQUE REFERENCES bien (id_bien),  -- UNIQUE : 1 vente par bien sur la période
-    date_vente      TEXT NOT NULL CHECK (date_vente LIKE '____-__-__'), -- format ISO AAAA-MM-JJ
-    valeur_fonciere REAL CHECK (valeur_fonciere > 0),                   -- NULL si absente (18 ventes)
+    date_vente      TEXT NOT NULL CHECK (date(date_vente) IS date_vente),  -- une vraie date AAAA-MM-JJ (refuse 2020-13-45)
+    valeur_fonciere REAL CHECK (valeur_fonciere IS NULL
+                                OR (typeof(valeur_fonciere) = 'real' AND valeur_fonciere > 0)),  -- NULL si absente (18) ; refuse ''
     nombre_lots     INTEGER NOT NULL CHECK (nombre_lots >= 1)
 );

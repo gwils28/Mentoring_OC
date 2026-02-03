@@ -317,7 +317,7 @@ const QUIZ = [
   ["Le nom de la région est-il répété dans la table des communes, dans un schéma en 3ᵉ forme normale ?", ["Oui, c'est plus pratique pour les requêtes", "Non : la commune garde seulement le code de sa région", "Oui, mais en majuscules"], 1,
    "Le nom dépend du code région, pas de la commune : le répéter crée des contradictions possibles. Une jointure le retrouve."],
   ["Que faire de la colonne « Nom de l'acquéreur » ?", ["La garder, elle est dans le fichier fourni", "La supprimer : donnée personnelle, inutile aux besoins", "La garder en majuscules"], 1,
-   "Le RGPD n'autorise que les données nécessaires. Aucun besoin ne porte sur l'acheteur : on anonymise en supprimant la colonne."],
+   "Le RGPD n'autorise que les données nécessaires. Aucun besoin ne porte sur l'acheteur : on supprime la colonne (minimisation). La base n'est pas anonyme pour autant : adresse, date et prix permettent de retrouver un bien."],
   ["Votre table « vente » contient 33 918 lignes au lieu de 34 169. Cause la plus probable ?", ["Un bug de SQLite", "Des lignes perdues à l'import, par exemple la Corse lue comme un nombre", "Des doublons supprimés automatiquement"], 1,
    "251 ventes de Corse disparaissent quand le code 2A ne passe pas dans une colonne numérique. D'où le réflexe : compter des deux côtés."],
   ["Vous voulez les communes avec au moins 50 ventes. Le filtre « au moins 50 » va dans…", ["WHERE", "HAVING", "ORDER BY"], 1,

@@ -38,7 +38,8 @@ deux sont défendables si l'apprenant connaît le coût de son choix.
 → Concaténée (département + commune), avec sa règle de calcul écrite.
 
 **Le nom de l'acquéreur : qu'en as-tu fait, et pourquoi ?**
-→ Supprimé (anonymisation) : donnée personnelle sans utilité pour les besoins. Savoir dire la différence avec la
+→ Supprimé (minimisation) : donnée personnelle sans utilité pour les besoins. Bonus : savoir que la base n'est pas
+anonyme pour autant (adresse + date + prix). Savoir dire la différence avec la
 pseudonymisation (remplacer par un identifiant ; la donnée reste personnelle).
 🚩 Colonne présente dans le dictionnaire ou dans la base.
 
