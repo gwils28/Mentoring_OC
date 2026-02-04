@@ -1,0 +1,879 @@
+{
+ "apercu": {
+  "region": {
+   "colonnes": [
+    "id_region",
+    "nom_region",
+    "nom_regroupement"
+   ],
+   "lignes": [
+    [
+     "00",
+     "Collectivités d'outre-mer",
+     "DROM-COM"
+    ],
+    [
+     "01",
+     "Guadeloupe",
+     "DROM-COM"
+    ],
+    [
+     "02",
+     "Martinique",
+     "DROM-COM"
+    ]
+   ]
+  },
+  "commune": {
+   "colonnes": [
+    "id_codedep_codecommune",
+    "id_region",
+    "code_departement",
+    "code_commune",
+    "nom_commune",
+    "population"
+   ],
+   "lignes": [
+    [
+     "01004",
+     "84",
+     "01",
+     "004",
+     "Ambérieu-en-Bugey",
+     14134
+    ],
+    [
+     "01014",
+     "84",
+     "01",
+     "014",
+     "Arbent",
+     3349
+    ],
+    [
+     "01030",
+     "84",
+     "01",
+     "030",
+     "Beauregard",
+     829
+    ]
+   ]
+  },
+  "bien": {
+   "colonnes": [
+    "id_bien",
+    "id_codedep_codecommune",
+    "no_voie",
+    "type_voie",
+    "voie",
+    "code_postal",
+    "type_local",
+    "total_pieces",
+    "surface_carrez"
+   ],
+   "lignes": [
+    [
+     1,
+     "01103",
+     347,
+     "RUE",
+     "DU CHATEAU",
+     "01170",
+     "Appartement",
+     3,
+     48.22
+    ],
+    [
+     2,
+     "06004",
+     4,
+     "BD",
+     "EDOUARD BAUDOIN",
+     "06160",
+     "Appartement",
+     1,
+     39.11
+    ],
+    [
+     3,
+     "06088",
+     20,
+     "RUE",
+     "MARCEAU",
+     "06000",
+     "Appartement",
+     3,
+     80.25
+    ]
+   ]
+  },
+  "vente": {
+   "colonnes": [
+    "id_vente",
+    "id_bien",
+    "date_vente",
+    "valeur_fonciere",
+    "nombre_lots"
+   ],
+   "lignes": [
+    [
+     1,
+     1,
+     "2020-01-02",
+     165000.0,
+     2
+    ],
+    [
+     2,
+     2,
+     "2020-01-02",
+     355680.0,
+     2
+    ],
+    [
+     3,
+     3,
+     "2020-01-02",
+     229500.0,
+     1
+    ]
+   ]
+  }
+ },
+ "besoins": {
+  "1": {
+   "fichier": "01_appartements_vendus.sql",
+   "sql": "SELECT\n    COUNT(*) AS nb_appartements_vendus\nFROM vente AS v\nINNER JOIN bien AS b ON b.id_bien = v.id_bien\nWHERE b.type_local = 'Appartement'\n  AND v.date_vente BETWEEN '2020-01-01' AND '2020-06-30';",
+   "colonnes": [
+    "nb_appartements_vendus"
+   ],
+   "lignes": [
+    [
+     31378
+    ]
+   ],
+   "nb_lignes": 1
+  },
+  "2": {
+   "fichier": "02_ventes_appartements_par_region.sql",
+   "sql": "SELECT\n    r.nom_region,\n    COUNT(*) AS nb_ventes_appartements\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nINNER JOIN region  AS r ON r.id_region = c.id_region\nWHERE b.type_local = 'Appartement'\n  AND v.date_vente BETWEEN '2020-01-01' AND '2020-06-30'\nGROUP BY r.id_region, r.nom_region\nORDER BY nb_ventes_appartements DESC;",
+   "colonnes": [
+    "nom_region",
+    "nb_ventes_appartements"
+   ],
+   "lignes": [
+    [
+     "Ile-de-France",
+     13995
+    ],
+    [
+     "Provence-Alpes-Côte d'Azur",
+     3649
+    ],
+    [
+     "Auvergne-Rhône-Alpes",
+     3253
+    ],
+    [
+     "Nouvelle-Aquitaine",
+     1932
+    ],
+    [
+     "Occitanie",
+     1640
+    ],
+    [
+     "Pays de la Loire",
+     1357
+    ],
+    [
+     "Hauts-de-France",
+     1254
+    ],
+    [
+     "Grand Est",
+     984
+    ],
+    [
+     "Bretagne",
+     983
+    ],
+    [
+     "Normandie",
+     862
+    ]
+   ],
+   "nb_lignes": 17
+  },
+  "3": {
+   "fichier": "03_proportion_par_nombre_de_pieces.sql",
+   "sql": "SELECT\n    b.total_pieces AS nb_pieces,\n    COUNT(*) AS nb_ventes,\n    ROUND(COUNT(*) * 100.0 / (\n        SELECT COUNT(*)\n        FROM vente AS v2\n        INNER JOIN bien AS b2 ON b2.id_bien = v2.id_bien\n        WHERE b2.type_local = 'Appartement'\n    ), 2) AS proportion_pct\nFROM vente AS v\nINNER JOIN bien AS b ON b.id_bien = v.id_bien\nWHERE b.type_local = 'Appartement'\nGROUP BY b.total_pieces\nORDER BY b.total_pieces;",
+   "colonnes": [
+    "nb_pieces",
+    "nb_ventes",
+    "proportion_pct"
+   ],
+   "lignes": [
+    [
+     0,
+     30,
+     0.1
+    ],
+    [
+     1,
+     6739,
+     21.48
+    ],
+    [
+     2,
+     9783,
+     31.18
+    ],
+    [
+     3,
+     8966,
+     28.57
+    ],
+    [
+     4,
+     4460,
+     14.21
+    ],
+    [
+     5,
+     1114,
+     3.55
+    ],
+    [
+     6,
+     204,
+     0.65
+    ],
+    [
+     7,
+     54,
+     0.17
+    ],
+    [
+     8,
+     17,
+     0.05
+    ],
+    [
+     9,
+     8,
+     0.03
+    ]
+   ],
+   "nb_lignes": 12
+  },
+  "4": {
+   "fichier": "04_top10_departements_prix_m2.sql",
+   "sql": "SELECT\n    c.code_departement,\n    ROUND(AVG(v.valeur_fonciere / b.surface_carrez), 0) AS prix_m2_moyen,\n    COUNT(*) AS nb_ventes\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nWHERE v.valeur_fonciere IS NOT NULL\nGROUP BY c.code_departement\nORDER BY AVG(v.valeur_fonciere / b.surface_carrez) DESC\nLIMIT 10;",
+   "colonnes": [
+    "code_departement",
+    "prix_m2_moyen",
+    "nb_ventes"
+   ],
+   "lignes": [
+    [
+     "75",
+     12053.0,
+     4840
+    ],
+    [
+     "92",
+     7219.0,
+     1813
+    ],
+    [
+     "94",
+     5343.0,
+     1926
+    ],
+    [
+     "06",
+     4700.0,
+     1343
+    ],
+    [
+     "74",
+     4667.0,
+     364
+    ],
+    [
+     "93",
+     4345.0,
+     1074
+    ],
+    [
+     "78",
+     4225.0,
+     1586
+    ],
+    [
+     "69",
+     4059.0,
+     1412
+    ],
+    [
+     "2A",
+     4027.0,
+     245
+    ],
+    [
+     "33",
+     3764.0,
+     1239
+    ]
+   ],
+   "nb_lignes": 10
+  },
+  "5": {
+   "fichier": "05_prix_m2_maison_ile_de_france.sql",
+   "sql": "SELECT\n    ROUND(AVG(v.valeur_fonciere / b.surface_carrez), 0) AS prix_m2_moyen_maison_idf,\n    COUNT(*) AS nb_maisons\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nWHERE b.type_local = 'Maison'\n  AND c.id_region = '11'\n  AND v.valeur_fonciere IS NOT NULL;",
+   "colonnes": [
+    "prix_m2_moyen_maison_idf",
+    "nb_maisons"
+   ],
+   "lignes": [
+    [
+     3745.0,
+     1059
+    ]
+   ],
+   "nb_lignes": 1
+  },
+  "6": {
+   "fichier": "06_top10_appartements_plus_chers.sql",
+   "sql": "SELECT\n    v.valeur_fonciere,\n    b.surface_carrez AS surface_m2,\n    b.total_pieces   AS nb_pieces,\n    c.nom_commune,\n    r.nom_region\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nINNER JOIN region  AS r ON r.id_region = c.id_region\nWHERE b.type_local = 'Appartement'\n  AND v.valeur_fonciere IS NOT NULL\nORDER BY v.valeur_fonciere DESC\nLIMIT 10;",
+   "colonnes": [
+    "valeur_fonciere",
+    "surface_m2",
+    "nb_pieces",
+    "nom_commune",
+    "nom_region"
+   ],
+   "lignes": [
+    [
+     9000000.0,
+     9.1,
+     1,
+     "Paris 16e",
+     "Ile-de-France"
+    ],
+    [
+     8600000.0,
+     64.0,
+     3,
+     "Corbeil-Essonnes",
+     "Ile-de-France"
+    ],
+    [
+     8577713.0,
+     20.55,
+     7,
+     "Paris 7e",
+     "Ile-de-France"
+    ],
+    [
+     7620000.0,
+     42.77,
+     2,
+     "Paris 17e",
+     "Ile-de-France"
+    ],
+    [
+     7600000.0,
+     253.3,
+     5,
+     "Paris 6e",
+     "Ile-de-France"
+    ],
+    [
+     7535000.0,
+     139.9,
+     4,
+     "Paris 1er",
+     "Ile-de-France"
+    ],
+    [
+     7420000.0,
+     360.95,
+     8,
+     "Paris 16e",
+     "Ile-de-France"
+    ],
+    [
+     7200000.0,
+     595.0,
+     8,
+     "Paris 16e",
+     "Ile-de-France"
+    ],
+    [
+     7050000.0,
+     122.56,
+     7,
+     "Paris 1er",
+     "Ile-de-France"
+    ],
+    [
+     6600000.0,
+     79.38,
+     3,
+     "Paris 1er",
+     "Ile-de-France"
+    ]
+   ],
+   "nb_lignes": 10
+  },
+  "7": {
+   "fichier": "07_evolution_ventes_t1_t2.sql",
+   "sql": "WITH ventes_par_trimestre AS (\n    SELECT\n        SUM(CASE WHEN date_vente BETWEEN '2020-01-01' AND '2020-03-31' THEN 1 ELSE 0 END) AS nb_t1,\n        SUM(CASE WHEN date_vente BETWEEN '2020-04-01' AND '2020-06-30' THEN 1 ELSE 0 END) AS nb_t2\n    FROM vente\n)\nSELECT\n    nb_t1,\n    nb_t2,\n    ROUND((nb_t2 - nb_t1) * 100.0 / nb_t1, 2) AS evolution_pct\nFROM ventes_par_trimestre;",
+   "colonnes": [
+    "nb_t1",
+    "nb_t2",
+    "evolution_pct"
+   ],
+   "lignes": [
+    [
+     16776,
+     17393,
+     3.68
+    ]
+   ],
+   "nb_lignes": 1
+  },
+  "8": {
+   "fichier": "08_regions_prix_m2_appartements_plus_de_4_pieces.sql",
+   "sql": "SELECT\n    RANK() OVER (ORDER BY AVG(v.valeur_fonciere / b.surface_carrez) DESC) AS rang,\n    r.nom_region,\n    ROUND(AVG(v.valeur_fonciere / b.surface_carrez), 0) AS prix_m2_moyen,\n    COUNT(*) AS nb_ventes\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nINNER JOIN region  AS r ON r.id_region = c.id_region\nWHERE b.type_local = 'Appartement'\n  AND b.total_pieces > 4\n  AND v.valeur_fonciere IS NOT NULL\nGROUP BY r.id_region, r.nom_region\nORDER BY rang;",
+   "colonnes": [
+    "rang",
+    "nom_region",
+    "prix_m2_moyen",
+    "nb_ventes"
+   ],
+   "lignes": [
+    [
+     1,
+     "Ile-de-France",
+     8770.0,
+     684
+    ],
+    [
+     2,
+     "La Réunion",
+     3642.0,
+     2
+    ],
+    [
+     3,
+     "Provence-Alpes-Côte d'Azur",
+     3588.0,
+     117
+    ],
+    [
+     4,
+     "Corse",
+     3105.0,
+     5
+    ],
+    [
+     5,
+     "Auvergne-Rhône-Alpes",
+     2891.0,
+     185
+    ],
+    [
+     6,
+     "Nouvelle-Aquitaine",
+     2465.0,
+     68
+    ],
+    [
+     7,
+     "Bretagne",
+     2412.0,
+     37
+    ],
+    [
+     8,
+     "Pays de la Loire",
+     2316.0,
+     54
+    ],
+    [
+     9,
+     "Hauts-de-France",
+     2190.0,
+     40
+    ],
+    [
+     10,
+     "Occitanie",
+     2097.0,
+     47
+    ]
+   ],
+   "nb_lignes": 15
+  },
+  "9": {
+   "fichier": "09_communes_50_ventes_t1.sql",
+   "sql": "SELECT\n    c.nom_commune,\n    c.code_departement,\n    COUNT(*) AS nb_ventes_t1\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nWHERE v.date_vente BETWEEN '2020-01-01' AND '2020-03-31'\nGROUP BY c.id_codedep_codecommune, c.nom_commune, c.code_departement\nHAVING COUNT(*) >= 50\nORDER BY nb_ventes_t1 DESC;",
+   "colonnes": [
+    "nom_commune",
+    "code_departement",
+    "nb_ventes_t1"
+   ],
+   "lignes": [
+    [
+     "Paris 17e",
+     "75",
+     228
+    ],
+    [
+     "Paris 15e",
+     "75",
+     215
+    ],
+    [
+     "Paris 18e",
+     "75",
+     209
+    ],
+    [
+     "Nice",
+     "06",
+     173
+    ],
+    [
+     "Paris 11e",
+     "75",
+     169
+    ],
+    [
+     "Paris 16e",
+     "75",
+     165
+    ],
+    [
+     "Bordeaux",
+     "33",
+     157
+    ],
+    [
+     "Paris 14e",
+     "75",
+     146
+    ],
+    [
+     "Paris 20e",
+     "75",
+     127
+    ],
+    [
+     "Nantes",
+     "44",
+     119
+    ]
+   ],
+   "nb_lignes": 48
+  },
+  "10": {
+   "fichier": "10_ecart_prix_m2_2_et_3_pieces.sql",
+   "sql": "WITH prix_par_taille AS (\n    SELECT\n        AVG(CASE WHEN b.total_pieces = 2 THEN v.valeur_fonciere / b.surface_carrez END) AS prix_m2_2p,\n        AVG(CASE WHEN b.total_pieces = 3 THEN v.valeur_fonciere / b.surface_carrez END) AS prix_m2_3p\n    FROM vente AS v\n    INNER JOIN bien AS b ON b.id_bien = v.id_bien\n    WHERE b.type_local = 'Appartement'\n      AND v.valeur_fonciere IS NOT NULL\n)\nSELECT\n    ROUND(prix_m2_2p, 0) AS prix_m2_2_pieces,\n    ROUND(prix_m2_3p, 0) AS prix_m2_3_pieces,\n    ROUND((prix_m2_3p - prix_m2_2p) * 100.0 / prix_m2_2p, 2) AS ecart_pct\nFROM prix_par_taille;",
+   "colonnes": [
+    "prix_m2_2_pieces",
+    "prix_m2_3_pieces",
+    "ecart_pct"
+   ],
+   "lignes": [
+    [
+     4909.0,
+     4300.0,
+     -12.4
+    ]
+   ],
+   "nb_lignes": 1
+  },
+  "11": {
+   "fichier": "11_top3_communes_par_departement.sql",
+   "sql": "WITH moyenne_par_commune AS (\n    SELECT\n        c.code_departement,\n        c.nom_commune,\n        AVG(v.valeur_fonciere) AS valeur_moyenne,\n        COUNT(*) AS nb_ventes\n    FROM vente AS v\n    INNER JOIN bien    AS b ON b.id_bien = v.id_bien\n    INNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\n    WHERE c.code_departement IN ('06', '13', '33', '59', '69')\n      AND v.valeur_fonciere IS NOT NULL\n    GROUP BY c.id_codedep_codecommune, c.code_departement, c.nom_commune\n),\nclassement AS (\n    SELECT\n        *,\n        RANK() OVER (PARTITION BY code_departement ORDER BY valeur_moyenne DESC) AS rang\n    FROM moyenne_par_commune\n)\nSELECT code_departement, rang, nom_commune, ROUND(valeur_moyenne, 0) AS valeur_moyenne, nb_ventes\nFROM classement\nWHERE rang <= 3\nORDER BY code_departement, rang;",
+   "colonnes": [
+    "code_departement",
+    "rang",
+    "nom_commune",
+    "valeur_moyenne",
+    "nb_ventes"
+   ],
+   "lignes": [
+    [
+     "06",
+     1,
+     "Saint-Jean-Cap-Ferrat",
+     968750.0,
+     4
+    ],
+    [
+     "06",
+     2,
+     "Eze",
+     655000.0,
+     2
+    ],
+    [
+     "06",
+     3,
+     "Mouans-Sartoux",
+     476898.0,
+     8
+    ],
+    [
+     "13",
+     1,
+     "Gignac-la-Nerthe",
+     330000.0,
+     1
+    ],
+    [
+     "13",
+     2,
+     "Saint-Savournin",
+     314425.0,
+     2
+    ],
+    [
+     "13",
+     3,
+     "Cassis",
+     313417.0,
+     16
+    ],
+    [
+     "33",
+     1,
+     "Lège-Cap-Ferret",
+     549501.0,
+     22
+    ],
+    [
+     "33",
+     2,
+     "Vayres",
+     335000.0,
+     1
+    ],
+    [
+     "33",
+     3,
+     "Arcachon",
+     307436.0,
+     55
+    ],
+    [
+     "59",
+     1,
+     "Bersée",
+     433202.0,
+     1
+    ]
+   ],
+   "nb_lignes": 15
+  },
+  "12": {
+   "fichier": "12_transactions_pour_1000_habitants.sql",
+   "sql": "SELECT\n    c.nom_commune,\n    c.code_departement,\n    c.population,\n    COUNT(*) AS nb_ventes,\n    ROUND(COUNT(*) * 1000.0 / c.population, 2) AS ventes_pour_1000_hab\nFROM vente AS v\nINNER JOIN bien    AS b ON b.id_bien = v.id_bien\nINNER JOIN commune AS c ON c.id_codedep_codecommune = b.id_codedep_codecommune\nWHERE c.population > 10000\nGROUP BY c.id_codedep_codecommune, c.nom_commune, c.code_departement, c.population\nORDER BY COUNT(*) * 1.0 / c.population DESC\nLIMIT 20;",
+   "colonnes": [
+    "nom_commune",
+    "code_departement",
+    "population",
+    "nb_ventes",
+    "ventes_pour_1000_hab"
+   ],
+   "lignes": [
+    [
+     "Paris 2e",
+     "75",
+     21595,
+     127,
+     5.88
+    ],
+    [
+     "Paris 1er",
+     "75",
+     15917,
+     79,
+     4.96
+    ],
+    [
+     "La Baule-Escoublac",
+     "44",
+     16255,
+     77,
+     4.74
+    ],
+    [
+     "Paris 3e",
+     "75",
+     34025,
+     161,
+     4.73
+    ],
+    [
+     "Arcachon",
+     "33",
+     11630,
+     55,
+     4.73
+    ],
+    [
+     "Paris 4e",
+     "75",
+     29131,
+     120,
+     4.12
+    ],
+    [
+     "Roquebrune-Cap-Martin",
+     "06",
+     12839,
+     52,
+     4.05
+    ],
+    [
+     "Paris 8e",
+     "75",
+     35655,
+     139,
+     3.9
+    ],
+    [
+     "Sanary-sur-Mer",
+     "83",
+     16889,
+     60,
+     3.55
+    ],
+    [
+     "La Londe-les-Maures",
+     "83",
+     10641,
+     37,
+     3.48
+    ]
+   ],
+   "nb_lignes": 20
+  }
+ },
+ "controle": [
+  [
+   "vente",
+   34169
+  ],
+  [
+   "bien",
+   34169
+  ],
+  [
+   "commune",
+   3125
+  ],
+  [
+   "region",
+   19
+  ]
+ ],
+ "ventes_par_mois": [
+  [
+   "2020-01",
+   6314
+  ],
+  [
+   "2020-02",
+   6144
+  ],
+  [
+   "2020-03",
+   4318
+  ],
+  [
+   "2020-04",
+   2611
+  ],
+  [
+   "2020-05",
+   7358
+  ],
+  [
+   "2020-06",
+   7424
+  ]
+ ],
+ "dictionnaire": [
+  [
+   "commune",
+   "id_codedep_codecommune",
+   "Identifiant unique de la commune",
+   "Texte",
+   "6",
+   "Concaténée",
+   "Clé primaire, unique, non nulle"
+  ],
+  [
+   "commune",
+   "code_departement",
+   "Code du département",
+   "Texte",
+   "3",
+   "Élémentaire",
+   "Non nul ; texte : « 2A », « 2B » (Corse), « 971 » (Guadeloupe), « 01 » garde son zéro"
+  ],
+  [
+   "bien",
+   "id_bien",
+   "Identifiant du bien dans la base",
+   "Entier",
+   "NC",
+   "Calculée",
+   "Clé primaire, unique, non nulle"
+  ],
+  [
+   "bien",
+   "code_postal",
+   "Code postal de l'adresse",
+   "Texte",
+   "5",
+   "Élémentaire",
+   "5 caractères (zéro initial rétabli : « 01170 ») ; décrit l'adresse, pas la commune (Nice en a 4)"
+  ],
+  [
+   "vente",
+   "id_bien",
+   "Bien vendu",
+   "Entier",
+   "NC",
+   "Élémentaire",
+   "Clé étrangère vers bien ; unique (1 vente par bien sur la période)"
+  ],
+  [
+   "vente",
+   "date_vente",
+   "Date de la vente (mutation)",
+   "Date",
+   "10",
+   "Élémentaire",
+   "Non nulle ; format AAAA-MM-JJ ; entre le 01/01/2020 et le 30/06/2020"
+  ],
+  [
+   "vente",
+   "valeur_fonciere",
+   "Prix de vente en euros",
+   "Décimal",
+   "NC",
+   "Élémentaire",
+   "Strictement positive ; vide (NULL) pour 18 ventes non renseignées"
+  ]
+ ]
+}
