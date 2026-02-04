@@ -35,8 +35,8 @@ vers la fiche) · `04_grille_evaluation.md` (grille **reformulée**, 🟢 / 🟠
 
 `presentation/build_deck.js` (pptxgenjs, layouts, sections, notes orateur sur chaque slide) + `theme_colors.js`,
 avec `package.json` et `package-lock.json` versionnés (`node_modules/` gitignoré). Les titres de slide énoncent un
-message. La structure narrative va dans `presentation/README.md`. Version web : artifact de type Slides, avec les
-figures téléversées comme assets.
+message. La structure narrative va dans `presentation/README.md`. Pas de version web de la présentation : le `.pptx`
+suffit (décision de l'utilisateur, oct. 2026).
 
 ## Page interactive (`site/index.html`)
 

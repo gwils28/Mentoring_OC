@@ -51,7 +51,7 @@ structure. Conventions détaillées des supports : [references/conventions-suppo
 |---|---|---|
 | Notebooks pédagogiques (une notion par fiche) | `pedagogie/` | `pedagogue`, puis `statisticien` pour les notions statistiques |
 | Kit mentor (README, déroulé, questions, erreurs, grille, bilan) | `kit-mentor/` | `pedagogue` |
-| Présentation `.pptx` générée par script + version web (artifact Slides) | `presentation/` | `pedagogue` (storytelling) |
+| Présentation `.pptx` générée par script (pas de version web) | `presentation/` | `pedagogue` (storytelling) |
 | Page interactive pour les apprenants (artifact) | `site/index.html` | `pedagogue` |
 | Pratiques actuelles du marché | `ALLER_PLUS_LOIN.md` | `expert-data-engineering` (+ `statisticien`) |
 | README du projet : par où commencer, résultats, écarts au plan, limites | `README.md` | `product-owner` |
@@ -73,6 +73,6 @@ Lance les relecteurs **en parallèle** quand ils portent sur des fichiers diffé
 - Les nombres cités dans un support doivent venir d'une sortie : vérifie-les avant d'écrire. Sur P01, plusieurs
   formulations plausibles étaient fausses (« la Chine vaut 1 en min-max », « Pearson s'effondre »).
 - Une matrice issue d'un `pivot_table` a des index et colonnes de même nom : `stack()` plante (test dédié dans P01).
-- Pas de LibreOffice sur la machine : le `.pptx` se valide par schéma et extraction du texte ; le contrôle visuel se
-  fait sur la version web.
+- Pas de LibreOffice sur la machine : le `.pptx` se valide par schéma, extraction du texte et calcul des positions ;
+  le contrôle visuel est demandé à l'utilisateur (ouverture dans PowerPoint).
 - Les artifacts sont privés : rappeler à l'utilisateur de les partager depuis le menu Share.
