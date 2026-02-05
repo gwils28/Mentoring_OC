@@ -12,7 +12,7 @@ Légende : 🟢 acquis · 🟠 à consolider (on en parle au bilan, non bloquant
 | ☐ | Atomicité | Adresse découpée (numéro, indice, type de voie, voie, code postal) | dictionnaire, table `bien` |
 | ☐ | Données nécessaires | Toutes les variables utiles aux 12 besoins, et seulement elles | dictionnaire |
 | ☐ | Clés | Une clé primaire par table, unique ; clés étrangères qui suivent le schéma ; choix justifié à l'oral | `sql/schema.sql` |
-| ☐ | Dictionnaire complet | Prix, date, surface, adresse, code département, code commune, ville, nombre de pièces, code région, région, commune (clé), type de local, population | `livrables/dictionnaire_donnees.xlsx` |
+| ☐ | Dictionnaire complet | `vente` : date, valeur foncière · `bien` : adresse, type de local, pièces, surface · `commune` : clé, codes département et commune, nom, population · `region` : code, nom | `livrables/dictionnaire_donnees.xlsx` |
 | ☐ | 7 colonnes | Code, signification, type, longueur, nature, règle de gestion, règle de calcul ; les données calculées ou concaténées ont leur règle de calcul | idem |
 | ☐ | RGPD | Aucune trace du nom de l'acquéreur | idem |
 

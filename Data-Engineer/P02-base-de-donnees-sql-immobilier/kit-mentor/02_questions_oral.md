@@ -22,7 +22,7 @@ redondante ou personnelle. L'apprenant doit pouvoir relier chaque variable gard�
 ## 2. Modéliser
 
 **Pourquoi pas le code postal comme clé de la commune ?**
-→ Un code postal couvre plusieurs communes (05100 : Briançon, Montgenèvre, Névache) ; il n'est pas unique.
+→ Il n'est pas unique : le notebook le montre, 05100 regroupe à lui seul Briançon, Montgenèvre et Névache.
 🔁 « Filtre le fichier sur le code postal 5100 : combien de communes vois-tu ? »
 
 **Nice a 4 codes postaux : où sont-ils dans ta base ?**
