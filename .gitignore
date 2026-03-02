@@ -4,6 +4,11 @@ _mentor_notes/
 # Données brutes : téléchargées et vérifiées (SHA-256) par le code de chaque projet
 **/data/raw/
 
+# Secrets (tokens d'API) : jamais versionnés, seul .env.example l'est
+.env
+.env.*
+!.env.example
+
 # Python / outils
 .venv/
 __pycache__/
