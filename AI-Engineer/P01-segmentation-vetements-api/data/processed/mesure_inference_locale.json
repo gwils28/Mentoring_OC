@@ -1,0 +1,26 @@
+{
+ "date": "2026-10-24",
+ "note": "50 images, PNG d origine, modele local (transformers) ; accord = part des pixels identiques aux predictions de l API (variante png)",
+ "mesures": [
+  {
+   "threads": 2,
+   "cpu": "AMD Ryzen 9 9955HX 16-Core Processor",
+   "median_s": 0.9012,
+   "p95_s": 0.9841,
+   "accord_pixels_api_png_median": 1.0,
+   "accord_min": 0.9998,
+   "miou_vetements_local": 0.796,
+   "torch": "2.14.1+cpu"
+  },
+  {
+   "threads": 1,
+   "cpu": "AMD Ryzen 9 9955HX 16-Core Processor",
+   "median_s": 1.8121,
+   "p95_s": 1.8683,
+   "accord_pixels_api_png_median": 1.0,
+   "accord_min": 0.9998,
+   "miou_vetements_local": 0.796,
+   "torch": "2.14.1+cpu"
+  }
+ ]
+}
