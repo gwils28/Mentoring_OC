@@ -1,0 +1,420 @@
+<title>Requêtez des services IA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : une colonne de lecture, des « ateliers » posés comme des patrons de couture sur une grille de pixels */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --ink: #141a2e;
+  --ink-2: #4a5170;
+  --line: #dde1ee;
+  --accent: #2f4fa8;      /* bleu denim */
+  --accent-ink: #ffffff;
+  --thread: #d9573a;      /* fil orangé : pièges */
+  --soft: #e8edfb;
+  --ok: #187a4c;
+  --bad: #b3362a;
+  --c-haut: #2a78d6; --c-pant: #eb6834; --c-jupe: #1baf7a; --c-fond: #eef0f6; --c-peau: #c3c2b7;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1322; --surface: #171c30; --ink: #eef0f8; --ink-2: #b4bad3; --line: #2b3250;
+    --accent: #7f9cf0; --accent-ink: #0f1322; --thread: #f08a6c; --soft: #1f2744; --ok: #4cc98a; --bad: #f08a7c;
+    --c-fond: #232a45; --c-peau: #8a8b84; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1322; --surface: #171c30; --ink: #eef0f8; --ink-2: #b4bad3; --line: #2b3250;
+  --accent: #7f9cf0; --accent-ink: #0f1322; --thread: #f08a6c; --soft: #1f2744; --ok: #4cc98a; --bad: #f08a7c;
+  --c-fond: #232a45; --c-peau: #8a8b84; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 920px; margin: 0 auto; display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-weight: 800; font-size: clamp(2rem, 5vw, 3.1rem); letter-spacing: -0.01em; }
+h2 { font-weight: 800; font-size: clamp(1.5rem, 3.4vw, 2rem); }
+h3 { font-weight: 600; font-size: 1.15rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 500 0.78rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.mono { font-family: var(--font-mono); }
+a { color: var(--accent); }
+section { display: grid; gap: 18px; }
+.lede { color: var(--ink-2); font-size: 1.08rem; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête : une bande de « pixels » colorés comme un masque de segmentation */
+header { display: grid; gap: 18px; padding-top: 40px; }
+.pixels { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; max-width: 420px; }
+.pixels span { aspect-ratio: 1; border-radius: 2px; background: var(--c-fond); }
+.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.brief div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 6px; min-width: 0; align-content: start; overflow-wrap: anywhere; }
+.brief b { font-family: var(--font-display); font-size: 1.05rem; }
+
+/* Étapes */
+.steps { display: grid; gap: 10px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.step > button { width: 100%; text-align: left; background: none; border: 0; padding: 16px 18px; cursor: pointer; display: flex; gap: 14px; align-items: baseline; }
+.step > button .n { font: 500 0.9rem var(--font-mono); color: var(--accent); min-width: 2.2em; }
+.step > button .t { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; flex: 1; }
+.step > button .chev { color: var(--ink-2); transition: transform .2s; }
+.step[data-open="true"] > button .chev { transform: rotate(90deg); }
+.step .body { padding: 0 18px 18px; display: grid; gap: 12px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 0.9rem; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.panel { background: var(--soft); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+.panel.trap { background: color-mix(in srgb, var(--thread) 14%, var(--surface)); }
+.panel code { font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; }
+
+/* Chemin d'une image */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; counter-reset: f; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 4px; min-width: 0; align-content: start; }
+.flow b { font-family: var(--font-display); }
+.flow small { color: var(--ink-2); }
+
+/* Ateliers */
+.lab { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 16px; }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 680px) { .lab-grid { grid-template-columns: 1fr; } }
+.canvas { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; max-width: 340px; touch-action: none; user-select: none; }
+.canvas div { aspect-ratio: 1; border-radius: 2px; background: var(--c-fond); position: relative; cursor: crosshair; }
+.canvas div.truth { box-shadow: inset 0 0 0 2px var(--ink-2); }
+.canvas div.pred { background: var(--c-jupe); }
+.canvas div.pred.truth { background: var(--c-haut); }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.88rem; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
+.stat span { font-size: 0.82rem; color: var(--ink-2); }
+.stat b { font: 600 1.5rem var(--font-mono); font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--accent); background: var(--surface); color: var(--accent); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-weight: 500; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.note { font-size: 0.92rem; color: var(--ink-2); }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.form label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--ink-2); }
+.form input { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--bg); font-family: var(--font-mono); font-variant-numeric: tabular-nums; width: 100%; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.warn { color: var(--bad); font-weight: 500; }
+
+/* Quiz */
+.quiz { display: grid; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; }
+.q .opts { display: grid; gap: 6px; }
+.q .opts button { text-align: left; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 8px 12px; cursor: pointer; }
+.q .opts button.right { border-color: var(--ok); box-shadow: inset 3px 0 0 var(--ok); }
+.q .opts button.wrong { border-color: var(--bad); box-shadow: inset 3px 0 0 var(--bad); }
+.q .why { font-size: 0.95rem; color: var(--ink-2); }
+
+/* Check-list */
+.check { display: grid; gap: 8px; }
+.check label { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.check input { margin-top: 5px; accent-color: var(--accent); }
+.progress { font: 500 0.9rem var(--font-mono); color: var(--ink-2); }
+footer { color: var(--ink-2); font-size: 0.88rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="pixels" id="pixels" aria-hidden="true"></div>
+  <span class="eyebrow">Parcours AI Engineer · premier projet</span>
+  <h1>Requêtez des services IA</h1>
+  <p class="lede">Vous rejoignez l'équipe IA d'une agence de marketing de mode. Elle veut repérer automatiquement les vêtements sur des photos d'influenceurs. Votre mission : tester un modèle déjà entraîné, appelé à distance, et dire ce qu'il coûterait à grande échelle.</p>
+  <div class="brief">
+    <div><b>Le modèle</b><span><span class="mono">sayeed99/segformer_b3_clothes</span>, sur Hugging Face : il donne une classe à chaque pixel (haut, pantalon, sac, fond…).</span></div>
+    <div><b>Les données</b><span>50 photos et 50 masques annotés à la main, 18 classes. C'est votre vérité de référence.</span></div>
+    <div><b>Les livrables</b><span>Un notebook (appels à l'API et visualisations) et une présentation complétée à partir du modèle fourni.</span></div>
+  </div>
+</header>
+
+<section aria-labelledby="t-chemin">
+  <span class="eyebrow">Avant de coder</span>
+  <h2 id="t-chemin">Le trajet d'une image</h2>
+  <p>Chaque étape correspond à quelques lignes de votre notebook. Si l'une d'elles casse, le message d'erreur dit laquelle.</p>
+  <div class="flow">
+    <div><b>Photo</b><small>réduite (≤ 512 px), encodée en JPEG : le modèle travaille de toute façon en 512 × 512</small></div>
+    <div><b>Requête POST</b><small>en-têtes <span class="mono">Authorization</span> (votre token) et <span class="mono">Content-Type</span></small></div>
+    <div><b>Code HTTP</b><small>200 : on lit. 429 / 503 : on attend et on réessaie. 401 / 402 : on corrige</small></div>
+    <div><b>Réponse JSON</b><small>un masque par classe détectée, encodé en base64</small></div>
+    <div><b>Carte</b><small>les masques fusionnés : un numéro de classe par pixel, une couleur par classe</small></div>
+  </div>
+</section>
+
+<section aria-labelledby="t-etapes">
+  <span class="eyebrow">Le projet</span>
+  <h2 id="t-etapes">Cinq étapes, dans l'ordre</h2>
+  <div class="steps" id="steps"></div>
+</section>
+
+<section aria-labelledby="t-iou">
+  <span class="eyebrow">Atelier 1</span>
+  <h2 id="t-iou">Dessinez une prédiction, regardez l'IoU réagir</h2>
+  <p>Le contour épais est la jupe annotée (la vérité). Cliquez ou glissez sur la grille pour dessiner ce que « prédit » le modèle. Comparez l'IoU, le Dice et le pourcentage de pixels bien classés.</p>
+  <div class="lab">
+    <div class="lab-grid">
+      <div style="display:grid;gap:10px;min-width:0">
+        <div class="canvas" id="canvas" role="grid" aria-label="Grille de 12 sur 16 pixels"></div>
+        <div class="legend"><span><i style="background:var(--c-haut)"></i>prédit et vrai</span><span><i style="background:var(--c-jupe)"></i>prédit à tort</span><span><i style="box-shadow:inset 0 0 0 2px var(--ink-2);background:var(--c-fond)"></i>vrai, oublié</span></div>
+      </div>
+      <div style="display:grid;gap:14px;min-width:0">
+        <div class="stats">
+          <div class="stat"><span>IoU</span><b id="s-iou">—</b></div>
+          <div class="stat"><span>Dice</span><b id="s-dice">—</b></div>
+          <div class="stat"><span>Pixels bien classés</span><b id="s-acc">—</b></div>
+        </div>
+        <div class="btns">
+          <button class="btn" id="b-perfect" type="button">Prédiction parfaite</button>
+          <button class="btn" id="b-shift" type="button">Décaler d'un pixel →</button>
+          <button class="btn" id="b-belt" type="button">Tester une ceinture</button>
+          <button class="btn" id="b-empty" type="button">Tout en fond</button>
+        </div>
+        <p class="note" id="lab-msg">Essayez « Tout en fond » : plus des trois quarts des pixels restent « bien classés »… sans un seul vêtement trouvé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="t-budget">
+  <span class="eyebrow">Atelier 2</span>
+  <h2 id="t-budget">Du chronomètre au budget</h2>
+  <p>Saisissez vos propres mesures. Les valeurs de départ sont des <b>exemples</b>, pas les résultats du projet : remplacez-les par ce que vous mesurez (temps par image) et par les prix que vous trouvez, avec leur date.</p>
+  <div class="lab">
+    <div class="form">
+      <label for="i-n">Images à traiter<input id="i-n" type="number" min="1" step="1000" value="100000"></label>
+      <label for="i-d">En combien de jours<input id="i-d" type="number" min="1" step="1" value="30"></label>
+      <label for="i-t">Secondes de calcul par image<input id="i-t" type="number" min="0.01" step="0.1" value="2"></label>
+      <label for="i-pi">À l'usage : prix par image ($)<input id="i-pi" type="number" min="0" step="0.00001" value="0.0001"></label>
+      <label for="i-ph">Machine dédiée : prix par heure ($)<input id="i-ph" type="number" min="0" step="0.01" value="0.07"></label>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td>Débit moyen nécessaire</td><td class="num" id="o-rate"></td></tr>
+          <tr><td>Une machine traite</td><td class="num" id="o-cap"></td></tr>
+          <tr><td>À l'usage (images × prix par image)</td><td class="num" id="o-use"></td></tr>
+          <tr><td>Machine allumée en continu (jours × 24 h × prix horaire)</td><td class="num" id="o-on"></td></tr>
+          <tr><td>Machine par lots, puis éteinte (heures de calcul × prix horaire)</td><td class="num" id="o-batch"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" id="o-msg"></p>
+  </div>
+</section>
+
+<section aria-labelledby="t-quiz">
+  <span class="eyebrow">Pour vérifier</span>
+  <h2 id="t-quiz">Quiz : êtes-vous prêt pour le bilan ?</h2>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<section aria-labelledby="t-check">
+  <span class="eyebrow">Avant de déposer</span>
+  <h2 id="t-check">Check-list des livrables</h2>
+  <p class="progress" id="progress"></p>
+  <div class="check" id="check"></div>
+  <p class="note">Nommage attendu : <span class="mono">Nom_Prenom_1_notebook_mmaaaa</span>, <span class="mono">Nom_Prenom_2_presentation_mmaaaa</span>, dans un zip <span class="mono">Titre_du_projet_nom_prenom</span>. Vos cases cochées restent dans ce navigateur.</p>
+</section>
+
+<footer>Supports de mentorat OpenClassrooms, parcours AI Engineer. Le corrigé complet, les fiches et le code sont dans le dépôt du mentor ; ouvrez le corrigé seulement après votre bilan.</footer>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage indisponible : on continue sans */ } },
+  };
+
+  // En-tête : quelques pixels « segmentés »
+  const px = $("pixels");
+  const shape = "......HHHH..............|.....HHHHHH....PPP......|.....HHHHHH...PPPPP.....|......JJJJ.....PPP......|.....JJJJJJ.....P.......";
+  shape.split("|").forEach((row) => [...row].forEach((c) => {
+    const s = document.createElement("span");
+    if (c === "H") s.style.background = "var(--c-haut)";
+    if (c === "J") s.style.background = "var(--c-jupe)";
+    if (c === "P") s.style.background = "var(--c-pant)";
+    px.appendChild(s);
+  }));
+
+  // Étapes
+  const STEPS = [
+    { t: "Installer un environnement isolé", todo: "Créer un environnement virtuel, y installer requests, Pillow, Matplotlib, NumPy et python-dotenv, et figer les versions dans un fichier.", trap: "Une bibliothèque installée dans le terminal mais introuvable dans Jupyter : ce sont deux Python différents. Affichez <code>sys.executable</code> dans le notebook.", ask: "« Si je clone votre dépôt, que dois-je taper pour retrouver votre environnement ? »", fiche: "Fiche 1 — Préparer son environnement" },
+    { t: "Obtenir et protéger son token", todo: "Créer un token Hugging Face avec le minimum de droits, le mettre dans un fichier <code>.env</code> listé dans <code>.gitignore</code>, le lire avec python-dotenv, le tester avec une requête simple.", trap: "Le token n'est pas dans le code… mais une cellule l'a affiché : les sorties sont enregistrées dans le fichier du notebook. Cherchez <code>hf_</code> avant chaque commit.", ask: "« Si votre token fuit demain, que faites-vous ? »", fiche: "Fiche 2 — Garder un secret" },
+    { t: "Préparer les données de test", todo: "Lister les 50 images et leurs 50 masques, vérifier qu'ils s'apparient, regarder ce que contient un masque (un numéro de classe par pixel).", trap: "Trier « image_10 » avant « image_2 » : l'ordre alphabétique n'est pas l'ordre numérique, et les paires se décalent.", ask: "« Que vaut un pixel du masque, et que veut dire 0 ? »", fiche: "Fiche 5 — Une image, un masque : des tableaux" },
+    { t: "Appeler le modèle, d'abord une image, puis 50", todo: "Envoyer une image, lire la réponse JSON, décoder les masques base64, les fusionner en une carte. Puis boucler sur les 50 images avec un timeout, une limite de requêtes par minute et des nouvelles tentatives sur les erreurs passagères.", trap: "L'adresse <code>api-inference.huggingface.co</code> du notebook fourni n'est plus en service : vérifiez l'adresse actuelle sur la page du modèle. Et réessayer une erreur 401 ne sert à rien.", ask: "« La 30ᵉ image renvoie une erreur 503 : que fait votre script ? »", fiche: "Fiches 3 et 4 — API et client robuste" },
+    { t: "Visualiser, mesurer, chiffrer", todo: "Afficher photo, annotation et prédiction côte à côte avec des couleurs fixes ; calculer l'IoU par vêtement ; décrire une méthode de validation ; estimer le coût de 500 000 images en 30 jours.", trap: "Annoncer « 96 % de pixels bien classés » : le fond occupe la majorité des pixels. Et se demander si le modèle n'aurait pas déjà vu ces 50 images…", ask: "« Votre score prouve-t-il que le modèle marchera sur les photos de l'agence ? »", fiche: "Fiches 6, 7 et 8 — Mesurer, valider, chiffrer" },
+  ];
+  const steps = $("steps");
+  STEPS.forEach((st, i) => {
+    const el = document.createElement("div");
+    el.className = "step"; el.dataset.open = i === 0 ? "true" : "false";
+    el.innerHTML = `<button type="button" aria-expanded="${i === 0}"><span class="n">${String(i + 1).padStart(2, "0")}</span><span class="t">${st.t}</span><span class="chev" aria-hidden="true">›</span></button>
+      <div class="body" ${i === 0 ? "" : "hidden"}>
+        <div class="tabs" role="tablist">${["À faire", "Piège", "Question du mentor", "Fiche"].map((l, j) => `<button type="button" role="tab" aria-selected="${j === 0}" data-k="${j}">${l}</button>`).join("")}</div>
+        <div class="panel" role="tabpanel"></div>
+      </div>`;
+    const panel = el.querySelector(".panel");
+    const show = (k) => {
+      panel.className = "panel" + (k === 1 ? " trap" : "");
+      panel.innerHTML = [st.todo, st.trap, st.ask, st.fiche][k];
+      el.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(+b.dataset.k === k)));
+    };
+    show(0);
+    el.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => show(+b.dataset.k)));
+    el.querySelector(":scope > button").addEventListener("click", (e) => {
+      const open = el.dataset.open !== "true";
+      el.dataset.open = String(open);
+      e.currentTarget.setAttribute("aria-expanded", String(open));
+      el.querySelector(".body").hidden = !open;
+    });
+    steps.appendChild(el);
+  });
+
+  // Atelier 1 : IoU
+  const COLS = 12, ROWS = 16;
+  const skirt = new Set();
+  for (let r = 5; r <= 11; r++) {
+    const half = 2 + Math.floor((r - 5) / 2);
+    for (let c = 6 - half; c < 6 + half; c++) skirt.add(r * COLS + c);
+  }
+  const belt = new Set([...Array(8)].map((_, k) => 4 * COLS + 2 + k));
+  let truth = skirt, pred = new Set(skirt), painting = null;
+  const canvas = $("canvas");
+  const cells = [];
+  for (let i = 0; i < COLS * ROWS; i++) {
+    const d = document.createElement("div");
+    d.dataset.i = i;
+    canvas.appendChild(d); cells.push(d);
+  }
+  const fmt = (x) => (Number.isFinite(x) ? x.toFixed(2).replace(".", ",") : "—");
+  const render = () => {
+    cells.forEach((d, i) => { d.classList.toggle("truth", truth.has(i)); d.classList.toggle("pred", pred.has(i)); });
+    const inter = [...pred].filter((i) => truth.has(i)).length;
+    const union = new Set([...pred, ...truth]).size;
+    const correct = COLS * ROWS - (union - inter);
+    $("s-iou").textContent = fmt(union ? inter / union : NaN);
+    $("s-dice").textContent = fmt(pred.size + truth.size ? (2 * inter) / (pred.size + truth.size) : NaN);
+    $("s-acc").textContent = Math.round((100 * correct) / (COLS * ROWS)) + " %";
+  };
+  const paint = (el) => {
+    const i = +el.dataset.i;
+    if (painting === "add") pred.add(i); else pred.delete(i);
+    render();
+  };
+  canvas.addEventListener("pointerdown", (e) => {
+    const el = e.target.closest("[data-i]"); if (!el) return;
+    painting = pred.has(+el.dataset.i) ? "remove" : "add"; paint(el);
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!painting) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el && el.parentElement === canvas) paint(el);
+  });
+  window.addEventListener("pointerup", () => { painting = null; });
+  const msg = $("lab-msg");
+  $("b-perfect").addEventListener("click", () => { pred = new Set(truth); render(); msg.textContent = "Superposition parfaite : IoU et Dice valent 1."; });
+  $("b-empty").addEventListener("click", () => { pred = new Set(); render(); msg.textContent = "Aucun vêtement trouvé, et pourtant la plupart des pixels sont « bien classés » : c'est le fond qui fait le score. L'IoU, lui, tombe à 0."; });
+  $("b-shift").addEventListener("click", () => {
+    pred = new Set([...pred].filter((i) => i % COLS < COLS - 1).map((i) => i + 1)); render();
+    msg.textContent = truth === belt ? "Décalée d'un pixel, une ceinture fine perd presque toute sa surface commune." : "Une jupe large résiste à un décalage d'un pixel : l'IoU baisse un peu. Essayez avec la ceinture.";
+  });
+  $("b-belt").addEventListener("click", () => {
+    truth = truth === belt ? skirt : belt; pred = new Set(truth); render();
+    $("b-belt").textContent = truth === belt ? "Revenir à la jupe" : "Tester une ceinture";
+    msg.textContent = truth === belt ? "Une ceinture d'un pixel de haut. Cliquez sur « Décaler d'un pixel » puis comparez avec la jupe." : "Retour à la jupe.";
+  });
+  render();
+
+  // Atelier 2 : budget
+  const money = (x) => x.toLocaleString("fr-FR", { maximumFractionDigits: x < 10 ? 2 : 0 }) + " $";
+  const calc = () => {
+    const n = +$("i-n").value, d = +$("i-d").value, t = +$("i-t").value, pi = +$("i-pi").value, ph = +$("i-ph").value;
+    if (!(n > 0 && d > 0 && t > 0)) { $("o-msg").textContent = "Saisissez un nombre d'images, une durée et un temps par image positifs."; return; }
+    const rate = n / (d * 24 * 60), cap = 60 / t, hours = (n * t) / 3600;
+    $("o-rate").textContent = rate.toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " images/min";
+    $("o-cap").textContent = cap.toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " images/min";
+    $("o-use").textContent = money(n * pi);
+    $("o-on").textContent = money(d * 24 * ph);
+    $("o-batch").textContent = `${Math.round(hours).toLocaleString("fr-FR")} h → ${money(hours * ph)}`;
+    const notes = [];
+    if (rate > cap) notes.push(`<span class="warn">Une seule machine ne suffit pas : il en faut au moins ${Math.ceil(rate / cap)}.</span>`);
+    if (hours > d * 24) notes.push(`<span class="warn">Le calcul par lots demande plus d'heures (${Math.round(hours)}) que la période n'en contient (${d * 24}).</span>`);
+    notes.push("Payer à l'usage grandit avec le volume ; une machine allumée en continu coûte le même prix tant qu'elle suffit. Citez la source et la date de chaque prix.");
+    $("o-msg").innerHTML = notes.join(" ");
+  };
+  ["i-n", "i-d", "i-t", "i-pi", "i-ph"].forEach((id) => $(id).addEventListener("input", calc));
+  calc();
+
+  // Quiz
+  const QUIZ = [
+    { q: "Où doit vivre votre token Hugging Face ?", o: ["Dans une variable en haut du notebook", "Dans un fichier .env listé dans .gitignore", "Dans le README, pour que le mentor puisse tester"], a: 1, why: "Le fichier .env n'est jamais versionné ; le code le lit avec python-dotenv. Une seule exception à surveiller : une sortie de cellule qui l'afficherait." },
+    { q: "L'API répond 503 sur la 30ᵉ image. Que doit faire le script ?", o: ["S'arrêter avec une erreur", "Attendre puis réessayer, et noter l'échec si ça persiste", "Passer à l'image suivante sans rien noter"], a: 1, why: "503 est une erreur passagère (modèle en chargement, serveur chargé) : on attend de plus en plus longtemps entre les essais. Si ça persiste, on journalise et on continue." },
+    { q: "Et si elle répond 401 ?", o: ["Réessayer 5 fois", "S'arrêter : le token est absent ou faux", "Réduire la taille de l'image"], a: 1, why: "Une erreur d'identification ne se corrige pas en attendant : il faut vérifier le token." },
+    { q: "Pour agrandir un masque à la taille de la photo, on utilise…", o: ["une interpolation bilinéaire, plus lisse", "le plus proche voisin (NEAREST)", "n'importe laquelle, c'est pareil"], a: 1, why: "Le bilinéaire invente des valeurs intermédiaires : entre 4 (haut) et 6 (pantalon), il crée un 5… une jupe qui n'existe pas." },
+    { q: "Votre modèle classe bien 96 % des pixels. Qu'en concluez-vous ?", o: ["Il est excellent", "Rien sans l'IoU par vêtement : le fond domine les pixels", "Il faut un autre modèle"], a: 1, why: "Un modèle qui ne prédit que du fond obtient déjà une forte exactitude. L'IoU par classe dit si les vêtements sont trouvés." },
+    { q: "Pourquoi le jeu de test doit-il être découpé par influenceur plutôt que par photo ?", o: ["Pour avoir plus d'images", "Pour qu'une même personne ne soit pas à la fois en entraînement et en test", "Ce n'est pas nécessaire"], a: 1, why: "Deux photos d'une même tenue se ressemblent trop : le test mesurerait la mémoire du modèle, pas sa capacité à généraliser." },
+    { q: "500 000 images en 30 jours, cela fait en moyenne…", o: ["environ 12 images par minute", "environ 170 images par minute", "environ 700 images par minute"], a: 0, why: "500 000 ÷ (30 × 24 × 60 minutes) ≈ 11,6 images par minute : un débit modeste." },
+  ];
+  const quiz = $("quiz");
+  QUIZ.forEach((item, i) => {
+    const el = document.createElement("div");
+    el.className = "q";
+    el.innerHTML = `<h3>${i + 1}. ${item.q}</h3><div class="opts">${item.o.map((o, j) => `<button type="button" data-j="${j}">${o}</button>`).join("")}</div><p class="why" hidden></p>`;
+    el.querySelectorAll(".opts button").forEach((b) => b.addEventListener("click", () => {
+      el.querySelectorAll(".opts button").forEach((x) => x.classList.remove("right", "wrong"));
+      const ok = +b.dataset.j === item.a;
+      b.classList.add(ok ? "right" : "wrong");
+      if (!ok) el.querySelectorAll(".opts button")[item.a].classList.add("right");
+      const why = el.querySelector(".why");
+      why.hidden = false;
+      why.textContent = (ok ? "Exact. " : "Pas tout à fait. ") + item.why;
+    }));
+    quiz.appendChild(el);
+  });
+
+  // Check-list
+  const ITEMS = [
+    "Environnement virtuel et fichier de dépendances aux versions figées",
+    "Token dans .env, .env dans .gitignore, aucun « hf_ » dans le code ni dans les sorties",
+    "Notebook découpé en sections qui suivent les étapes du projet",
+    "Appels à l'API avec timeout, limite de requêtes par minute et nouvelles tentatives ciblées",
+    "Les 50 images traitées ; une image en échec ne fait pas perdre les autres",
+    "Visualisations photo / annotation / prédiction avec des couleurs fixes et une légende",
+    "IoU (ou Dice) par vêtement, et pas seulement le pourcentage de pixels bien classés",
+    "Méthode de validation : rôle de train / validation / test, et limite de votre test",
+    "Budget pour 500 000 images en 30 jours : calcul, hypothèses, prix sourcés et datés",
+    "Présentation complétée à partir du modèle fourni, un message par slide",
+    "Fichiers nommés selon la convention et déposés dans un zip",
+  ];
+  const saved = store.get("aie-p01-check", {});
+  const check = $("check");
+  const progress = () => { $("progress").textContent = `${Object.values(saved).filter(Boolean).length} / ${ITEMS.length} cochés`; };
+  ITEMS.forEach((t, i) => {
+    const id = `chk-${i}`;
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerHTML = `<input type="checkbox" id="${id}" ${saved[i] ? "checked" : ""}><span>${t}</span>`;
+    label.querySelector("input").addEventListener("change", (e) => { saved[i] = e.target.checked; store.set("aie-p01-check", saved); progress(); });
+    check.appendChild(label);
+  });
+  progress();
+})();
+</script>
