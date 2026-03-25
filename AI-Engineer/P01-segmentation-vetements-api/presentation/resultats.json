@@ -1,0 +1,60 @@
+{
+ "miou": 0.791,
+ "ic": [
+  0.756,
+  0.818
+ ],
+ "verdict": "non disqualifié pour un pilote",
+ "vetements_faibles": [],
+ "iou": {
+  "Fond": 0.985,
+  "Chapeau": 0.848,
+  "Cheveux": 0.79,
+  "Lunettes": 0.702,
+  "Haut": 0.881,
+  "Jupe": 0.942,
+  "Pantalon": 0.899,
+  "Robe": 0.801,
+  "Ceinture": 0.565,
+  "Chaussures": 0.754,
+  "Visage": 0.835,
+  "Jambes": 0.874,
+  "Bras": 0.798,
+  "Sac": 0.726,
+  "Écharpe": 0.825
+ },
+ "images_par_famille": {
+  "Fond": 50,
+  "Chapeau": 13,
+  "Cheveux": 46,
+  "Lunettes": 13,
+  "Haut": 41,
+  "Jupe": 10,
+  "Pantalon": 35,
+  "Robe": 13,
+  "Ceinture": 10,
+  "Chaussures": 47,
+  "Visage": 50,
+  "Jambes": 31,
+  "Bras": 48,
+  "Sac": 24,
+  "Écharpe": 3
+ },
+ "exactitude_modele": 0.96,
+ "exactitude_tout_fond": 0.784,
+ "delta_jpeg_png": -0.0052,
+ "ko_jpeg": 53,
+ "ko_png": 426,
+ "latence_mediane": 0.71,
+ "latence_p95": 1.24,
+ "appels_reussis": 150,
+ "debit_requis_min": 11.6,
+ "cout": {
+  "serverless_max": 16.6,
+  "cpu_continu": 50.4,
+  "t4_continu": 360.0,
+  "cpu_lots": 17.5,
+  "heures_lots": 250,
+  "debit_cpu_min": 33
+ }
+}

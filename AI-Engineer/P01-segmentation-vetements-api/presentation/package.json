@@ -1,0 +1,16 @@
+{
+  "name": "presentation-aie-p01",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "node build_deck.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "jszip": "3.10.2",
+    "pptxgenjs": "3.12.0"
+  }
+}
