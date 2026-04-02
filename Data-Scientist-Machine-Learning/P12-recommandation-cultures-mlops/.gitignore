@@ -1,0 +1,5 @@
+
+# MLflow local (régénéré par `agrireco train`)
+mlruns/
+rapport-tests.xml
+/mlflow.db
