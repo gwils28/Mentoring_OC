@@ -1,0 +1,57 @@
+# Configuration unique du pipeline (prepare → train → evaluate).
+# Changer une valeur ici, puis relancer `uv run agrireco all` : rien n'est codé en dur ailleurs.
+
+paths:
+  processed: data/processed             # CSV consolidé, journaux, résultats (versionnés)
+  models: models                        # modèle servi par l'API (versionné)
+  mlruns: mlruns                        # suivi MLflow local (non versionné)
+
+seed: 42
+
+split:
+  test_size: 0.2          # part des PAYS mis de côté pour le test final
+  cv_folds: 5             # validation croisée groupée par pays, sur les pays d'entraînement
+  sensitivity_splits: 20  # découpages répétés pour mesurer la sensibilité au tirage des pays
+
+features:
+  - crop
+  - avg_temp
+  - rainfall_mm
+  - log10_pesticides_t
+
+# Variantes de variables comparées avec le modèle retenu (ce qu'ajoute chaque variable au-delà de la culture)
+feature_variants:
+  culture_seule: [crop]
+  culture_pluie: [crop, rainfall_mm]
+  culture_pluie_temperature: [crop, rainfall_mm, avg_temp]
+  culture_pesticides: [crop, log10_pesticides_t]
+  toutes: [crop, avg_temp, rainfall_mm, log10_pesticides_t]
+
+# Réglages de départ (expérience « comparaison ») ; l'optimisation explore les plages de `search`
+models:
+  baseline: {}
+  ridge: {alpha: 1.0}
+  random_forest: {n_estimators: 300}
+  hist_gb: {}
+
+search:
+  n_iter: 30
+  ridge:
+    alpha: [0.01, 0.1, 1.0, 10.0, 100.0]
+  random_forest:
+    n_estimators: [200, 300, 500]
+    max_depth: [null, 8, 12, 20]
+    min_samples_leaf: [1, 2, 5, 10, 20, 50]
+    max_features: [0.33, 0.5, 0.75, 1.0]
+  hist_gb:
+    learning_rate: [0.01, 0.02, 0.05, 0.1, 0.2]
+    max_iter: [100, 200, 400, 800]
+    max_leaf_nodes: [7, 15, 31, 63]
+    min_samples_leaf: [5, 10, 20, 50, 100]
+    l2_regularization: [0.0, 0.1, 1.0, 10.0]
+
+recommendation:
+  min_crops: 3            # un (pays, année) n'est évalué que s'il a au moins 3 cultures observées
+  bootstrap: 2000
+  bootstrap_seed: 0
+  permutation_repeats: 10

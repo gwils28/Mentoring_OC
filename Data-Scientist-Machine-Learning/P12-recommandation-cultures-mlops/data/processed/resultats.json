@@ -1,0 +1,240 @@
+{
+  "modele": "ridge",
+  "params": {
+    "alpha": 10.0
+  },
+  "donnees": {
+    "lignes": 15794,
+    "pays": 119,
+    "cultures": 10,
+    "annees": [
+      1990,
+      2013
+    ],
+    "pays_entrainement": 95,
+    "pays_test": 24,
+    "lignes_test": 3455,
+    "cultures_test": 10
+  },
+  "cv": {
+    "baseline": {
+      "moyenne": 0.7339881044543677,
+      "ecart_type": 0.04268144373234695
+    },
+    "ridge": {
+      "moyenne": 0.6407392792238127,
+      "ecart_type": 0.06883317051369175
+    },
+    "random_forest": {
+      "moyenne": 0.6342792087655703,
+      "ecart_type": 0.07148323267506912
+    },
+    "hist_gb": {
+      "moyenne": 0.6382987837660117,
+      "ecart_type": 0.07539279247372442
+    }
+  },
+  "cv_variantes": {
+    "culture_seule": {
+      "moyenne": 0.7300292778284243,
+      "ecart_type": 0.04416206177157473
+    },
+    "culture_pluie": {
+      "moyenne": 0.7346553230298088,
+      "ecart_type": 0.03974363906597409
+    },
+    "culture_pluie_temperature": {
+      "moyenne": 0.6852078410418019,
+      "ecart_type": 0.048173115014115184
+    },
+    "culture_pesticides": {
+      "moyenne": 0.649308240152963,
+      "ecart_type": 0.07024827190821131
+    },
+    "toutes": {
+      "moyenne": 0.6407392792238127,
+      "ecart_type": 0.06883317051369175
+    }
+  },
+  "test": {
+    "rmse_log": 0.6084991556627158,
+    "r2_log": 0.6238119262554334,
+    "mae_t_ha": 2.4490782713247334,
+    "median_rel_error": 0.37389382923197456,
+    "bias_t_ha": 0.5435467276925797,
+    "rmse_log_ic95": [
+      0.5295718844805675,
+      0.6794241298969557
+    ],
+    "rmse_log_par_pays": 0.5771200458379632,
+    "mae_t_ha_par_pays": 2.5392120212915374,
+    "train_rmse_log": 0.6239400384054323,
+    "rmse_log_culture_seule": 0.6801880301502163,
+    "facteur_typique": 1.4684897288762946,
+    "facteur_exp_rmse": 1.8376712695189101,
+    "part_dans_facteur_exp_rmse": 0.6989869753979739,
+    "reference_mediane": {
+      "rmse_log": 0.6987219454315425,
+      "r2_log": 0.5039861187236254,
+      "mae_t_ha": 2.781559562598244,
+      "median_rel_error": 0.4688345788729548,
+      "bias_t_ha": 0.5195906759527895
+    }
+  },
+  "cv_aleatoire_rmse_log": {
+    "moyenne": 0.619341967452532,
+    "ecart_type": 0.0113363796237401
+  },
+  "importance": {
+    "bloc climat + pesticides": 0.19591252474717294,
+    "culture": 0.7507067922395743,
+    "pesticides": 0.09471927388772147,
+    "pluie": 0.0012773927857086752,
+    "température": 0.029981903777760898
+  },
+  "recommandation": {
+    "n_pays_evalues": 24,
+    "n_pays_annees": 536,
+    "cultures_par_groupe_moyenne": 6.44589552238806,
+    "taux_top1_modele": 0.375,
+    "taux_top1_modele_ic95": [
+      0.23317721043073605,
+      0.5207194759286273
+    ],
+    "taux_top1_constant": 0.39552238805970147,
+    "taux_top1_hasard": 0.1715003849798626,
+    "diff_modele_moins_constant": -0.02052238805970147,
+    "diff_modele_moins_constant_ic95": [
+      -0.10185185185185185,
+      0.07463385320588066
+    ],
+    "modele_utile_pour_recommander": false,
+    "gain_modele": 0.3429662663167607,
+    "gain_constant": 0.3853164415034261,
+    "gain_oracle": 0.794685518140156,
+    "kendall_modele": 0.2598803772716816,
+    "kendall_constant": 0.32803945249597427,
+    "repartition_recommandations": {
+      "Sorghum": 315,
+      "Maize": 96,
+      "Yams": 92,
+      "Plantains and others": 23,
+      "Rice, paddy": 10
+    },
+    "repartition_constant": {
+      "Sorghum": 430,
+      "Maize": 106
+    },
+    "taux_top1_modele_normaliseur_lignes": 0.457089552238806,
+    "taux_top1_constant_normaliseur_lignes": 0.4253731343283582,
+    "diff_normaliseur_lignes_ic95": [
+      -0.15284838527312555,
+      0.23422259057870487
+    ],
+    "pays_ou_modele_et_constant_different": 7,
+    "part_groupes_meme_recommandation": 0.7667910447761194,
+    "filtre_part_lignes_test_non_appuyees": 0.04167872648335745,
+    "filtre_taux_top1": 0.4085820895522388,
+    "filtre_diff_moins_constant_ic95": [
+      -0.0772201797385621,
+      0.12077892021765234
+    ]
+  },
+  "sensibilite": {
+    "rmse_log": {
+      "min": 0.5139517228529186,
+      "mediane": 0.6011258944362106,
+      "max": 0.6700957060476241
+    },
+    "top1_modele": {
+      "min": 0.14072494669509594,
+      "mediane": 0.33470309039130897,
+      "max": 0.5174953959484346
+    },
+    "top1_constant": {
+      "min": 0.17635270541082165,
+      "mediane": 0.3400132426511461,
+      "max": 0.5542168674698795
+    },
+    "modele_bat_constant": 9,
+    "egalites": 1,
+    "modele_battu": 10,
+    "biais_t_ha": {
+      "min": -1.9475619145913738,
+      "mediane": -0.8682627676302119,
+      "max": 0.26081473581809217,
+      "negatif": 17
+    },
+    "n_decoupages": 20
+  },
+  "reference_t_ha": {
+    "Cassava": 10.204,
+    "Maize": 2.906,
+    "Plantains and others": 7.779,
+    "Potatoes": 15.936,
+    "Rice, paddy": 3.298,
+    "Sorghum": 1.232,
+    "Soybeans": 1.601,
+    "Sweet potatoes": 9.0,
+    "Wheat": 2.487,
+    "Yams": 8.753
+  },
+  "analyse_complementaire": {
+    "random_forest_depart": {
+      "cv_aleatoire_rmse_log": 0.27852841580602905,
+      "cv_par_pays_rmse_log": 0.7853951670321571
+    },
+    "hist_gb_depart": {
+      "cv_aleatoire_rmse_log": 0.36273265576931557,
+      "cv_par_pays_rmse_log": 0.6797357842015641
+    },
+    "ridge_optimise": {
+      "cv_aleatoire_rmse_log": 0.619341967452532,
+      "cv_par_pays_rmse_log": 0.6407392792238127
+    },
+    "random_forest_optimise": {
+      "cv_aleatoire_rmse_log": 0.49130599847160106,
+      "cv_par_pays_rmse_log": 0.6342792087655703,
+      "test_rmse_log": 0.566303637900642,
+      "taux_top1": 0.3358208955223881,
+      "diff_moins_constant": -0.05970149253731338,
+      "diff_moins_constant_ic95": [
+        -0.18382352941176472,
+        0.0639158036600936
+      ],
+      "repartition_recommandations": {
+        "Maize": 195,
+        "Sorghum": 143,
+        "Cassava": 50,
+        "Yams": 47,
+        "Potatoes": 40,
+        "Sweet potatoes": 25,
+        "Rice, paddy": 20,
+        "Wheat": 8,
+        "Plantains and others": 8
+      }
+    },
+    "hist_gb_optimise": {
+      "cv_aleatoire_rmse_log": 0.4851579167090323,
+      "cv_par_pays_rmse_log": 0.6382987837660117,
+      "test_rmse_log": 0.5671241737795782,
+      "taux_top1": 0.40671641791044777,
+      "diff_moins_constant": 0.011194029850746301,
+      "diff_moins_constant_ic95": [
+        -0.1055752487562189,
+        0.1385898031595843
+      ],
+      "repartition_recommandations": {
+        "Maize": 212,
+        "Sorghum": 136,
+        "Yams": 64,
+        "Cassava": 49,
+        "Sweet potatoes": 23,
+        "Rice, paddy": 22,
+        "Potatoes": 15,
+        "Plantains and others": 8,
+        "Wheat": 7
+      }
+    }
+  }
+}
