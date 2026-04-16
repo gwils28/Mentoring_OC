@@ -1,0 +1,142 @@
+# CI/CD du projet DSML P12 (prédiction de rendement et recommandation de cultures).
+# Documentation : Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops/docs/ci_cd.md
+#
+#   qualite (lint + tests unitaires + tests de l'API)  →  image (build + test d'intégration du conteneur)
+#                                                       →  publication sur GHCR (branche main uniquement)
+# Une étape qui échoue arrête la suite : pas d'image publiée si un test casse.
+
+name: DSML P12 — agrireco
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops/**"
+      - ".github/workflows/dsml-p12-agrireco.yml"
+  pull_request:
+    paths:
+      - "Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops/**"
+      - ".github/workflows/dsml-p12-agrireco.yml"
+  workflow_dispatch:
+
+# Droits minimaux par défaut ; seul le job de publication peut écrire dans le registre
+permissions:
+  contents: read
+
+concurrency:
+  group: dsml-p12-${{ github.ref }}
+  # Annule seulement les runs de PR : un push sur main ne doit pas couper une publication en cours
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    working-directory: Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops
+
+env:
+  IMAGE_NAME: agrireco-api
+
+jobs:
+  qualite:
+    name: Lint et tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v10.3.2
+        with:
+          enable-cache: true
+
+      - name: Environnement exact (uv.lock)
+        run: uv sync --locked --python 3.12
+
+      - name: Lint (ruff)
+        run: |
+          uv run ruff check src tests api app scripts
+          uv run ruff format --check src tests api app scripts
+
+      - name: Les requirements.txt correspondent à uv.lock
+        run: |
+          # Régénérés en place avec les mêmes options (l'en-tête du fichier contient la commande), puis comparés par git
+          uv export --frozen --no-default-groups --group api --no-emit-project --no-hashes -o api/requirements.txt -q
+          uv export --frozen --no-default-groups --only-group front --no-emit-project --no-hashes -o app/requirements.txt -q
+          git diff --exit-code -- api/requirements.txt app/requirements.txt
+
+      - name: Tests unitaires et tests de l'API
+        run: uv run pytest -q --junitxml=rapport-tests.xml
+
+      - name: Garder le rapport de tests
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapport-tests
+          path: Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops/rapport-tests.xml
+
+  image:
+    name: Image Docker de l'API
+    needs: qualite
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Construire l'image
+        run: docker build -f api/Dockerfile -t "$IMAGE_NAME:ci" .
+
+      - name: Test d'intégration du conteneur (/health, /predict, /recommend, erreur 422)
+        run: |
+          docker run -d --name api -p 8000:8000 "$IMAGE_NAME:ci"
+          timeout 60 bash -c 'until curl -sf localhost:8000/health; do sleep 1; done'
+          curl -sf -X POST localhost:8000/predict -H 'content-type: application/json' \
+            -d '{"crop":"Wheat","avg_temp":10,"rainfall_mm":700,"pesticides_t":30000}' | tee /tmp/predict.json
+          python3 -c "import json; assert json.load(open('/tmp/predict.json'))['yield_t_ha'] > 0"
+          curl -sf -X POST localhost:8000/recommend -H 'content-type: application/json' \
+            -d '{"avg_temp":10,"rainfall_mm":700,"pesticides_t":30000}' > /tmp/reco.json
+          python3 -c "import json; assert len(json.load(open('/tmp/reco.json'))['ranking']) == 10"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8000/predict \
+            -H 'content-type: application/json' -d '{"crop":"Banana","avg_temp":10,"rainfall_mm":700,"pesticides_t":1}')
+          test "$code" = "422"
+
+      - name: Journaux du conteneur (en cas d'échec)
+        if: failure()
+        run: docker logs api || true
+
+      - name: Connexion à GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publier l'image (tags sha et latest)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          image="ghcr.io/$owner/$IMAGE_NAME"
+          docker tag "$IMAGE_NAME:ci" "$image:${GITHUB_SHA::7}"
+          docker tag "$IMAGE_NAME:ci" "$image:latest"
+          docker push "$image:${GITHUB_SHA::7}"
+          docker push "$image:latest"
+          echo "Image publiée : \`$image:${GITHUB_SHA::7}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  alerte:
+    name: Alerte en cas d'échec
+    needs: [qualite, image]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Résumé lisible dans l'onglet Actions
+        working-directory: .
+        run: |
+          {
+            echo "## ❌ Pipeline DSML P12 en échec"
+            echo "- Lint et tests : ${{ needs.qualite.result }}"
+            echo "- Image Docker : ${{ needs.image.result }}"
+            echo "Aucune image n'a été publiée. GitHub prévient aussi l'auteur du commit par e-mail."
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
