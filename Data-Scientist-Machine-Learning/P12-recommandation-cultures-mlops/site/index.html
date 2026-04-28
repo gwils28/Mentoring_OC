@@ -1,0 +1,456 @@
+<title>Carnet de champ Agritech</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : un carnet de parcelle — bande d'en-tête, puis sections empilées sur une colonne de lecture,
+   labos en deux colonnes qui passent à une seule sur téléphone */
+:root {
+  --bg: #f4f7f2; --surface: #ffffff; --sunk: #e7eee5; --line: #cfdacb;
+  --ink: #17231b; --ink-2: #4b5a4f; --muted: #76857a;
+  --leaf: #2d7a4c; --leaf-soft: #d6eadb; --wheat: #b87d14; --wheat-soft: #f5e6c4; --soil: #7a4b2a;
+  --bad: #b23b2e; --bad-soft: #f6dcd8;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111914; --surface: #18221c; --sunk: #1f2b23; --line: #2f3e34;
+  --ink: #e5eee6; --ink-2: #b2c1b5; --muted: #85958a;
+  --leaf: #5fbf85; --leaf-soft: #1f3a2a; --wheat: #e2a93f; --wheat-soft: #3a2f17; --soil: #c9906a;
+  --bad: #ef8a7d; --bad-soft: #3d201c; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111914; --surface: #18221c; --sunk: #1f2b23; --line: #2f3e34;
+  --ink: #e5eee6; --ink-2: #b2c1b5; --muted: #85958a;
+  --leaf: #5fbf85; --leaf-soft: #1f3a2a; --wheat: #e2a93f; --wheat-soft: #3a2f17; --soil: #c9906a;
+  --bad: #ef8a7d; --bad-soft: #3d201c; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--body); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.band { background: var(--leaf); color: #fff; }
+header.band .wrap { padding-block: 40px 32px; display: grid; gap: 14px; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+h1 { font: 700 clamp(30px, 5vw, 48px)/1.05 var(--display); margin: 0; text-wrap: balance; max-width: 18ch; }
+.lede { max-width: 62ch; margin: 0; font-size: 17px; }
+.mail { background: rgba(255,255,255,.12); border-radius: 10px; padding: 14px 16px; max-width: 70ch;
+  font-size: 15px; display: grid; gap: 6px; }
+.mail b { font-weight: 600; }
+main .wrap { display: grid; gap: 56px; padding-block: 40px 64px; }
+section { display: grid; gap: 16px; min-width: 0; }
+h2 { font: 700 26px/1.15 var(--display); margin: 0; text-wrap: balance; }
+h3 { font: 600 17px/1.3 var(--body); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.sub { color: var(--ink-2); }
+code, .num { font-family: var(--mono); font-size: .92em; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Étapes */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tabs button, .seg button { font: 500 14px var(--body); color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.tabs button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--wheat); outline-offset: 2px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+  display: grid; gap: 16px; }
+.step-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.cell { display: grid; gap: 6px; align-content: start; }
+.tag { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cell.trap { background: var(--bad-soft); border-radius: 10px; padding: 12px; }
+.cell.trap .tag { color: var(--bad); }
+.cell.ask { background: var(--wheat-soft); border-radius: 10px; padding: 12px; }
+.cell.ask .tag { color: var(--wheat); }
+.cell ul { margin: 0; padding-left: 18px; }
+
+/* Entonnoir */
+.funnel { display: grid; gap: 8px; }
+.frow { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 5.5rem; gap: 12px; align-items: center; }
+.frow .lab { font-size: 14px; color: var(--ink-2); }
+.frow .bar { height: 22px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.frow .bar span { display: block; height: 100%; background: var(--soil); border-radius: 0 4px 4px 0; }
+.frow .val { text-align: right; font: 500 14px var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Labos */
+.lab-box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+  display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: 24px; }
+.controls { display: grid; gap: 14px; align-content: start; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+label.chk { display: flex; gap: 8px; align-items: center; font-size: 15px; cursor: pointer; }
+select { font: 15px var(--body); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); width: 100%; }
+.out { display: grid; gap: 12px; min-width: 0; }
+.verdict { border-radius: 10px; padding: 12px 14px; font-size: 15px; }
+.verdict.ok { background: var(--leaf-soft); }
+.verdict.ko { background: var(--bad-soft); }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.stat { background: var(--sunk); border-radius: 10px; padding: 10px 14px; min-width: 8rem; }
+.stat b { display: block; font: 700 24px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 13px; color: var(--ink-2); }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 14px; min-width: 22rem; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+td.num, th.num { text-align: right; }
+.bars { display: grid; gap: 6px; }
+.brow { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr) 4.5rem; gap: 10px; align-items: center; font-size: 14px; }
+.brow .bar { height: 18px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.brow .bar span { display: block; height: 100%; background: var(--leaf); border-radius: 0 4px 4px 0; transition: width .3s; }
+.brow.top .bar span { background: var(--wheat); }
+.brow.top .name { font-weight: 600; }
+.brow .v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.note { font-size: 13px; color: var(--muted); }
+
+/* Comparateur */
+.duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.duo.trio { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.duo .stat b { font-size: 34px; }
+.duo .stat.ko b { color: var(--bad); }
+.duo .stat.ok b { color: var(--leaf); }
+
+/* Quiz */
+.quiz { display: grid; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 10px; }
+.opts { display: grid; gap: 8px; }
+.opts button { text-align: left; font: 15px var(--body); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.opts button.right { background: var(--leaf-soft); border-color: var(--leaf); }
+.opts button.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.expl { font-size: 15px; color: var(--ink-2); }
+.score { font: 500 14px var(--mono); color: var(--ink-2); }
+
+/* Check-list */
+.checklist { display: grid; gap: 8px; }
+.checklist label { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer; }
+.checklist input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--leaf); }
+.checklist small { display: block; color: var(--muted); font-size: 13px; }
+.progress { height: 8px; background: var(--sunk); border-radius: 999px; overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--leaf); width: 0; transition: width .3s; }
+footer .wrap { padding-block: 24px 40px; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .step-grid, .lab-box, .duo, .duo.trio { grid-template-columns: minmax(0, 1fr); }
+  .frow { grid-template-columns: minmax(0, 1fr) 5rem; }
+  .frow .lab { grid-column: 1 / -1; }
+  .brow { grid-template-columns: 6.5rem minmax(0, 1fr) 3.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Projet Data Scientist ML · Agritech Answers</span>
+    <h1>Prédire un rendement, recommander une culture</h1>
+    <p class="lede">Vous construisez de bout en bout une application pour des agriculteurs : un modèle de rendement
+      suivi dans MLflow, une API, une interface Streamlit et un pipeline d'intégration continue. Cette page vous
+      accompagne étape par étape, avec deux labos et une démonstration sur les vraies données du projet.</p>
+    <div class="mail">
+      <span><b>La demande, en résumé.</b> Deux fonctions dans une même interface :</span>
+      <span>· <b>Prédiction</b> : une culture et les conditions de la parcelle → un rendement estimé.</span>
+      <span>· <b>Recommandation</b> : les conditions seules → toutes les cultures simulées et classées.</span>
+      <span>Livrables : captures MLflow, scripts d'entraînement, pipeline MLOps, pipeline CI/CD, rapport métier (PDF).</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section id="etapes" aria-labelledby="t-etapes">
+      <h2 id="t-etapes">Les cinq étapes</h2>
+      <p class="sub">Pour chaque étape : ce qu'il faut produire, le piège qui guette, la question que votre mentor
+        posera, et la fiche pédagogique qui vous aide.</p>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="step" id="step" role="tabpanel" aria-live="polite"></div>
+    </section>
+
+    <section id="entonnoir" aria-labelledby="t-entonnoir">
+      <h2 id="t-entonnoir">Ce que perd une fusion, étape par étape</h2>
+      <p class="sub">Le fichier des rendements FAO compte 56 717 lignes (toutes années, 1961-2016). Chaque jointure
+        avec la pluie, les pesticides puis la température ne garde que les pays et années présents des deux côtés.
+        Comptez les lignes après chaque jointure : c'est le journal qui permet d'expliquer ses choix.</p>
+      <div class="funnel" id="funnel"></div>
+      <p class="note">Avec les noms de pays harmonisés entre fichiers. La table fournie toute prête,
+        <code>yield_df.csv</code>, a été construite autrement : vérifiez combien de ses lignes sont uniques.</p>
+    </section>
+
+    <section id="labo-cle" aria-labelledby="t-cle">
+      <h2 id="t-cle">Labo 1 · Sur quelle clé fusionner ?</h2>
+      <p class="sub">L'énoncé suggère de relier les deux jeux de données. Choisissez une clé et regardez ce qui se
+        passe vraiment.</p>
+      <div class="lab-box">
+        <div class="controls">
+          <div>
+            <h3>Fusionner avec le jeu « Agriculture Crop Yield »</h3>
+          </div>
+          <div class="seg" role="group" aria-label="Clé de jointure">
+            <button type="button" data-key="pays" aria-pressed="true">pays + année</button>
+            <button type="button" data-key="culture" aria-pressed="false">culture</button>
+          </div>
+          <div><h3>Fusion des fichiers FAO entre eux</h3></div>
+          <label class="chk"><input type="checkbox" id="harmo"> Harmoniser les noms de pays</label>
+        </div>
+        <div class="out">
+          <div class="verdict" id="key-verdict"></div>
+          <div id="key-detail"></div>
+          <div class="stats" id="harmo-stats"></div>
+          <p class="note" id="harmo-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="labo-relatif" aria-labelledby="t-relatif">
+      <h2 id="t-relatif">Labo 2 · Tonnes par hectare ou rendement relatif ?</h2>
+      <p class="sub">Rendements observés en 2010 (statistiques FAO, pas un modèle). Classez les cultures d'un pays de
+        deux façons. Le rendement relatif divise chaque rendement par le rendement habituel de la culture (médiane sur
+        tous les pays et années) : 1,3 signifie 30 % au-dessus de l'habitude.</p>
+      <div class="lab-box">
+        <div class="controls">
+          <label for="pays-select"><h3>Pays</h3></label>
+          <select id="pays-select"></select>
+          <div class="seg" role="group" aria-label="Classement">
+            <button type="button" data-mode="brut" aria-pressed="true">t/ha brutes</button>
+            <button type="button" data-mode="relatif" aria-pressed="false">rendement relatif</button>
+          </div>
+          <p class="note" id="relatif-note"></p>
+        </div>
+        <div class="out">
+          <div class="bars" id="bars"></div>
+          <div class="verdict" id="relatif-verdict"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="labo-validation" aria-labelledby="t-validation">
+      <h2 id="t-validation">Démonstration · Le même modèle, deux façons de le valider</h2>
+      <p class="sub">Une forêt aléatoire avec ses réglages par défaut, sur les données FAO, en prédisant le logarithme du
+        rendement (fiche 4). Erreur RMSE du log : 0,1 correspond à environ 10 % d'erreur relative.</p>
+      <div class="duo trio">
+        <div class="stat ok"><b class="num">0,28</b><span>validation aléatoire : les années d'un même pays
+          sont mélangées entre entraînement et validation</span></div>
+        <div class="stat ko"><b class="num">0,72</b><span>validation groupée par pays : chaque pays est entièrement
+          d'un seul côté</span></div>
+        <div class="stat"><b class="num">0,72</b><span>référence naïve : le rendement habituel de chaque culture,
+          sans regarder les conditions (fiche 5)</span></div>
+      </div>
+      <p><b>Le modèle fait-il mieux que ne rien savoir des conditions ?</b> Sur des pays nouveaux, à peine : il est au
+        niveau de la référence.</p>
+      <p>La forêt reconnaît les pays, car la pluie a une seule valeur par pays. Elle ressort alors leurs rendements
+        passés. Seule la validation par pays mesure ce qui arrivera avec un nouveau client. Faites le test sur
+        votre propre modèle.</p>
+    </section>
+
+    <section id="quiz" aria-labelledby="t-quiz">
+      <h2 id="t-quiz">Quiz : raisonner avant de coder</h2>
+      <p class="score" id="score">0 / 6</p>
+      <div class="quiz" id="quiz-list"></div>
+    </section>
+
+    <section id="checklist" aria-labelledby="t-check">
+      <h2 id="t-check">Check-list avant la soutenance</h2>
+      <p class="sub">Vos coches restent dans ce navigateur uniquement.</p>
+      <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+      <div class="checklist" id="check-list"></div>
+    </section>
+
+  </div>
+</main>
+<footer><div class="wrap">Support de mentorat OpenClassrooms · parcours Data Scientist Machine Learning · données :
+  FAO et Banque mondiale (Crop Yield Prediction Dataset), jeu Agriculture Crop Yield fourni avec la mission.</div></footer>
+
+<script>
+const STEPS = [
+  { t: "1 · Explorer et fusionner", faire: ["Explorer les deux jeux : types, valeurs manquantes, distributions", "Vérifier qu'une ligne = un pays, une culture, une année", "Produire un CSV consolidé et un résumé écrit de la stratégie de fusion", "ACP sur le jeu Agriculture Crop Yield"],
+    piege: "Le jeu Agriculture Crop Yield est-il réaliste ? Regardez le rendement moyen de chaque culture. Et une ACP dont toutes les valeurs propres valent environ 1 n'a aucun axe à interpréter.",
+    ask: "Une ligne de votre table, c'est quoi ? Combien de fois y trouvez-vous le blé indien de l'an 2000 ?", fiche: "Fiches 1 (maille), 2 (jointures), 3 (ACP)" },
+  { t: "2 · Modèle et MLflow", faire: ["Une référence naïve (rendement habituel de la culture)", "Plusieurs modèles comparés sur les mêmes plis", "Une recherche systématique d'hyperparamètres (grille ou aléatoire)", "Chaque essai tracé dans MLflow ; graine fixée ; modèle final sauvegardé"],
+    piege: "Un découpage aléatoire laisse le modèle reconnaître les pays : le score est flatteur et faux pour un nouveau client. Découpez par pays.",
+    ask: "Quel hyperparamètre a été décisif, et pourquoi cette plage de valeurs ?", fiche: "Fiches 4 (validation par pays), 5 (optimisation et MLflow), 6 (pipeline)" },
+  { t: "3 · API FastAPI", faire: ["POST /predict : une culture + le contexte → un rendement", "POST /recommend : le contexte → toutes les cultures classées", "Dockerfile et requirements.txt aux versions figées"],
+    piege: "Sans validation des entrées, une température de 300 °C donne une prédiction. Refusez-la (code 422 : l'API rejette une entrée invalide).",
+    ask: "Si j'envoie une culture inconnue, que répond votre API ?", fiche: "Fiche 7 (servir un modèle)" },
+  { t: "4 · Interface Streamlit", faire: ["Choix du mode Prédiction ou Recommandation", "Curseurs pour le contexte, un bouton", "Un chiffre clair, un graphique en barres et un tableau"],
+    piege: "L'interface ne contient aucun modèle : elle appelle l'API. Si elle importe scikit-learn, l'architecture n'est plus découplée.",
+    ask: "Si l'API est éteinte, que voit l'utilisateur ?", fiche: "Fiche 7 (l'API qu'elle appelle)" },
+  { t: "5 · CI/CD", faire: ["Un workflow YAML : tests, puis build de l'image", "Déploiement (registre d'images) recommandé", "Une alerte en cas d'échec, une documentation du pipeline"],
+    piege: "Un mot de passe dans le YAML est public. Une image publiée sans attendre les tests peut être cassée (needs : un job attend que le job de tests ait réussi).",
+    ask: "Que se passe-t-il si un test échoue ? Et une fois en production, comment sauriez-vous que le modèle se dégrade ?", fiche: "Fiche 8 (Dockerfile et workflow)" },
+];
+const FUNNEL = [["rendements FAO (toutes années)", 56717], ["sans l'agrégat « China »", 56269], ["après jointure pluie", 29042], ["après jointure pesticides", 21984], ["après jointure température", 15794]];
+const MED = {"Cassava": 10.0, "Maize": 2.58, "Plantains and others": 8.4, "Potatoes": 15.96, "Rice, paddy": 3.46, "Sorghum": 1.25, "Soybeans": 1.59, "Sweet potatoes": 8.4, "Wheat": 2.47, "Yams": 8.68};
+const OBS = {"Brazil": {"Cassava": 13.95, "Maize": 4.37, "Potatoes": 25.89, "Rice, paddy": 4.13, "Sorghum": 2.32, "Soybeans": 2.95, "Sweet potatoes": 11.85, "Wheat": 2.83, "Yams": 9.53}, "Egypt": {"Maize": 7.27, "Potatoes": 25.92, "Rice, paddy": 9.42, "Sorghum": 5.01, "Soybeans": 2.85, "Sweet potatoes": 30.61, "Wheat": 5.57}, "France": {"Maize": 8.83, "Potatoes": 42.16, "Rice, paddy": 5.04, "Sorghum": 5.51, "Soybeans": 2.75, "Wheat": 7.04}, "India": {"Cassava": 34.76, "Maize": 2.54, "Potatoes": 19.93, "Rice, paddy": 3.36, "Sorghum": 0.86, "Soybeans": 1.33, "Sweet potatoes": 9.21, "Wheat": 2.84}, "Indonesia": {"Cassava": 20.22, "Maize": 4.44, "Potatoes": 15.94, "Rice, paddy": 5.02, "Soybeans": 1.37, "Sweet potatoes": 11.33}, "Japan": {"Maize": 2.56, "Potatoes": 27.76, "Rice, paddy": 6.51, "Soybeans": 1.62, "Sweet potatoes": 21.75, "Wheat": 2.76, "Yams": 22.7}, "Kenya": {"Cassava": 5.25, "Maize": 1.73, "Plantains and others": 12.5, "Potatoes": 22.43, "Rice, paddy": 4.24, "Sorghum": 0.73, "Soybeans": 0.95, "Sweet potatoes": 9.97, "Wheat": 3.2, "Yams": 6.56}, "Peru": {"Cassava": 11.77, "Maize": 3.1, "Plantains and others": 12.86, "Potatoes": 13.16, "Rice, paddy": 7.29, "Sorghum": 2.94, "Soybeans": 1.78, "Sweet potatoes": 16.79, "Wheat": 1.42}};
+const PAYS_FR = {Brazil: "Brésil", Egypt: "Égypte", France: "France", India: "Inde", Indonesia: "Indonésie", Japan: "Japon", Kenya: "Kenya", Peru: "Pérou"};
+const CROPS_FR = {"Cassava": "Manioc", "Maize": "Maïs", "Plantains and others": "Banane plantain", "Potatoes": "Pomme de terre", "Rice, paddy": "Riz", "Sorghum": "Sorgho", "Soybeans": "Soja", "Sweet potatoes": "Patate douce", "Wheat": "Blé", "Yams": "Igname"};
+const fr = (v, d = 2) => v.toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d });
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage indisponible */ } } };
+
+// ---- Étapes
+const tabs = document.getElementById("tabs"), step = document.getElementById("step");
+function showStep(i) {
+  [...tabs.children].forEach((b, j) => b.setAttribute("aria-selected", j === i ? "true" : "false"));
+  const s = STEPS[i];
+  step.innerHTML = `<h3>${esc(s.t)}</h3><div class="step-grid">
+    <div class="cell"><span class="tag">À faire</span><ul>${s.faire.map((f) => `<li>${esc(f)}</li>`).join("")}</ul></div>
+    <div class="cell trap"><span class="tag">Piège</span><p>${esc(s.piege)}</p></div>
+    <div class="cell ask"><span class="tag">Question du mentor</span><p>${esc(s.ask)}</p></div>
+    <div class="cell"><span class="tag">Pour s'entraîner</span><p>${esc(s.fiche)}</p></div></div>`;
+  store.set("p12-etape", i);
+}
+STEPS.forEach((s, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.role = "tab"; b.id = `tab-${i}`; b.textContent = s.t;
+  b.addEventListener("click", () => showStep(i));
+  tabs.appendChild(b);
+});
+showStep(Math.min(store.get("p12-etape", 0), STEPS.length - 1));
+
+// ---- Entonnoir
+const max = FUNNEL[0][1];
+document.getElementById("funnel").innerHTML = FUNNEL.map(([l, v]) =>
+  `<div class="frow"><span class="lab">${esc(l)}</span><span class="bar"><span style="width:${(100 * v / max).toFixed(1)}%"></span></span><span class="val">${v.toLocaleString("fr-FR")}</span></div>`).join("");
+
+// ---- Labo 1
+let key = "pays";
+const KEY = {
+  pays: { ok: false, verdict: "Impossible : le jeu Agriculture Crop Yield n'a ni pays ni année.",
+    detail: "<p>Il ne contient que quatre « régions » (North, South, East, West). Attribuer des pays à ces régions, ce serait inventer une information.</p>" },
+  culture: { ok: false, verdict: "Possible, mais inutile : les colonnes ajoutées sont constantes.",
+    detail: `<p>Seules 4 cultures existent dans les deux jeux. Après agrégation par culture du jeu synthétique :</p>
+      <div class="table-wrap"><table><thead><tr><th>Culture</th><th class="num">part avec engrais</th><th class="num">part irriguée</th><th class="num">rendement moyen (t/ha)</th></tr></thead><tbody>
+      <tr><td>Maïs</td><td class="num">0,498</td><td class="num">0,500</td><td class="num">4,641</td></tr>
+      <tr><td>Riz</td><td class="num">0,500</td><td class="num">0,496</td><td class="num">4,651</td></tr>
+      <tr><td>Soja</td><td class="num">0,500</td><td class="num">0,501</td><td class="num">4,654</td></tr>
+      <tr><td>Blé</td><td class="num">0,501</td><td class="num">0,501</td><td class="num">4,653</td></tr></tbody></table></div>
+      <p class="note">Et la jointure fait perdre la moitié des lignes FAO (les 6 autres cultures). À vous de décider quoi faire de ce jeu, et de le justifier.</p>` },
+};
+function renderKey() {
+  document.querySelectorAll("[data-key]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.key === key ? "true" : "false"));
+  const k = KEY[key], v = document.getElementById("key-verdict");
+  v.className = "verdict " + (k.ok ? "ok" : "ko"); v.textContent = k.verdict;
+  document.getElementById("key-detail").innerHTML = k.detail;
+  const h = document.getElementById("harmo").checked;
+  document.getElementById("harmo-stats").innerHTML = h
+    ? `<div class="stat"><b>15 794</b><span>lignes (pays, culture, année)</span></div><div class="stat"><b>119</b><span>pays</span></div>`
+    : `<div class="stat"><b>13 130</b><span>lignes (pays, culture, année)</span></div><div class="stat"><b>101</b><span>pays</span></div>`;
+  document.getElementById("harmo-note").textContent = h
+    ? "18 pays récupérés, dont les États-Unis, la Russie et la Chine continentale : leurs noms s'écrivaient différemment d'un fichier à l'autre."
+    : "Sans harmonisation, « United States » (température) ne rencontre jamais « United States of America » (FAO) : le pays disparaît sans message d'erreur.";
+}
+document.querySelectorAll("[data-key]").forEach((b) => b.addEventListener("click", () => { key = b.dataset.key; renderKey(); }));
+document.getElementById("harmo").addEventListener("change", renderKey);
+renderKey();
+
+// ---- Labo 2
+let mode = "brut";
+const sel = document.getElementById("pays-select");
+Object.keys(OBS).sort((a, b) => PAYS_FR[a].localeCompare(PAYS_FR[b], "fr")).forEach((p) => {
+  const o = document.createElement("option"); o.value = p; o.textContent = PAYS_FR[p]; sel.appendChild(o);
+});
+sel.value = store.get("p12-pays", "France");
+if (!OBS[sel.value]) sel.value = "France";
+function renderBars() {
+  document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false"));
+  const obs = OBS[sel.value];
+  const rows = Object.entries(obs).map(([c, y]) => ({ c, y, r: y / MED[c] }));
+  const val = (d) => (mode === "brut" ? d.y : d.r);
+  rows.sort((a, b) => val(b) - val(a));
+  const m = Math.max(...rows.map(val));
+  document.getElementById("bars").innerHTML = rows.map((d, i) =>
+    `<div class="brow${i === 0 ? " top" : ""}"><span class="name">${esc(CROPS_FR[d.c])}</span><span class="bar"><span style="width:${(100 * val(d) / m).toFixed(1)}%"></span></span><span class="v">${mode === "brut" ? fr(d.y, 1) + " t" : "× " + fr(d.r)}</span></div>`).join("");
+  const first = CROPS_FR[rows[0].c];
+  const v = document.getElementById("relatif-verdict");
+  if (mode === "brut") {
+    v.className = "verdict ko";
+    v.textContent = `En tonnes, ${first} arrive en tête. Une culture lourde et gorgée d'eau gagne presque toujours : ce classement dit ce qui pèse le plus, pas ce qui réussit le mieux ici.`;
+  } else {
+    v.className = "verdict ok";
+    v.textContent = `En rendement relatif, ${first} dépasse le plus son rendement habituel. C'est une comparaison qui a un sens d'une culture à l'autre (mais sans prix, ce n'est pas encore la culture la plus rentable).`;
+  }
+  document.getElementById("relatif-note").textContent = mode === "relatif"
+    ? "Rendement habituel = médiane de la culture sur tous les pays et toutes les années de la table (1990-2013)."
+    : "Rendements observés en 2010, en tonnes par hectare.";
+  store.set("p12-pays", sel.value);
+}
+sel.addEventListener("change", renderBars);
+document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.mode; renderBars(); }));
+renderBars();
+
+// ---- Quiz
+const QUIZ = [
+  { q: "Votre table contient 28 242 lignes pour 13 130 combinaisons pays × culture × année. Quelle est la première chose à faire ?",
+    o: ["Entraîner quand même : plus de lignes, c'est plus d'information", "Trouver d'où viennent les doublons et obtenir une ligne par combinaison", "Supprimer les doublons exacts avec drop_duplicates() sur toutes les colonnes"], a: 1,
+    e: "Des doublons font peser certains pays plusieurs fois plus que les autres et mettent des copies d'une même ligne en entraînement et en test. Ici, les lignes en double ne sont pas identiques (la température change) : drop_duplicates() sur toutes les colonnes ne les enlève pas. On remonte à la cause (plusieurs stations de température par pays) et on agrège avant de joindre." },
+  { q: "Votre ACP donne 5 valeurs propres comprises entre 0,99 et 1,01. Qu'en concluez-vous ?",
+    o: ["Les variables ne sont pas corrélées : rien à résumer, aucun axe à interpréter", "La première composante est l'axe le plus important du rendement", "Il faut garder les deux premières composantes, qui portent 40 % de l'information"], a: 0,
+    e: "Des valeurs propres égales signifient qu'aucune direction ne résume les autres ; les axes sont alors arbitraires. Garder deux composantes sur cinq, c'est perdre 60 % de l'information pour rien. Et une ACP ne regarde jamais la cible : elle ne dit pas ce qui prédit le rendement." },
+  { q: "Votre modèle obtient un R² de 0,92 en validation croisée aléatoire. Que vérifier en priorité ?",
+    o: ["Le même score sur une validation aléatoire répétée 10 fois, pour s'assurer qu'il est stable", "Le score sur les données d'entraînement", "Le même score avec une validation groupée par pays"], a: 2,
+    e: "Répéter une validation aléatoire donne un score stable… et toujours flatteur : les années d'un même pays restent des deux côtés, et le modèle reconnaît le pays. Seule la validation par pays mesure ce qui arrivera pour un nouveau client (démonstration plus bas)." },
+  { q: "Votre classement de cultures trouve la meilleure culture dans 55 % des cas, contre 25 % au hasard. Est-il utile ?",
+    o: ["Oui, il fait deux fois mieux que le hasard", "Pas forcément : il faut le comparer à un classement fixe, le même pour tous", "Oui, si l'écart avec le hasard est statistiquement significatif"], a: 1,
+    e: "Une liste fixe des cultures, qui ne regarde même pas les conditions, bat déjà largement le hasard. Battre le hasard, même significativement, ne suffit donc pas : le modèle n'apporte quelque chose que s'il fait mieux que cette référence exigeante, avec une marge d'incertitude (fiche 9)." },
+  { q: "Les pays qui utilisent le plus de pesticides ont des rendements plus élevés dans vos données. Que pouvez-vous écrire dans le rapport ?",
+    o: ["Augmenter les pesticides augmente le rendement", "Les pesticides ont un effet positif sur le rendement, à confirmer par d'autres études", "Les pays qui utilisent plus de pesticides (en tonnes) ont en moyenne des rendements plus élevés ; c'est surtout un indicateur de la taille et de l'équipement de leur agriculture"], a: 2,
+    e: "Ce sont des tonnes totales par pays : un grand pays équipé en utilise beaucoup. Une corrélation entre pays n'est pas un effet sur une parcelle, même « à confirmer »." },
+  { q: "Un test échoue dans votre workflow GitHub Actions. Que doit-il se passer ?",
+    o: ["Le job s'arrête, l'image n'est ni construite ni publiée, l'équipe est prévenue", "L'image est construite pour vérifier qu'elle démarre, mais pas publiée", "Le workflow relance le test jusqu'à ce qu'il passe"], a: 0,
+    e: "Le job de construction de l'image attend le job de tests (needs : il ne démarre que si les tests ont réussi). Un job « if: failure() » ou les notifications de GitHub préviennent l'équipe. Relancer un test qui échoue jusqu'à ce qu'il passe masque le problème." },
+];
+const answered = store.get("p12-quiz", {});
+const list = document.getElementById("quiz-list");
+function updateScore() {
+  const ok = Object.entries(answered).filter(([i, v]) => QUIZ[i] && v === QUIZ[i].a).length;
+  document.getElementById("score").textContent = `${ok} / ${QUIZ.length} bonnes réponses`;
+}
+QUIZ.forEach((item, i) => {
+  const box = document.createElement("div"); box.className = "q";
+  box.innerHTML = `<h3>${i + 1}. ${esc(item.q)}</h3><div class="opts">${item.o.map((o, j) => `<button type="button" data-j="${j}">${esc(o)}</button>`).join("")}</div><p class="expl" hidden></p>`;
+  const expl = box.querySelector(".expl");
+  const reveal = (j) => {
+    box.querySelectorAll("button").forEach((b) => {
+      const k = Number(b.dataset.j);
+      b.classList.toggle("right", k === item.a);
+      b.classList.toggle("wrong", k === j && j !== item.a);
+    });
+    expl.hidden = false;
+    expl.textContent = (j === item.a ? "Exact. " : "Pas tout à fait. ") + item.e;
+  };
+  box.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    const j = Number(b.dataset.j); answered[i] = j; store.set("p12-quiz", answered); reveal(j); updateScore();
+  }));
+  if (answered[i] !== undefined) reveal(answered[i]);
+  list.appendChild(box);
+});
+updateScore();
+
+// ---- Check-list
+const CHECK = [
+  ["Une ligne = un pays, une culture, une année ; clé vérifiée unique", "et le nombre de lignes perdues à chaque jointure, expliqué"],
+  ["Stratégie de fusion écrite et justifiée", "y compris ce que vous avez décidé de ne pas fusionner, et pourquoi"],
+  ["ACP lue honnêtement", "valeurs propres, et ce qu'elle permet ou non de conclure"],
+  ["Au moins deux expériences MLflow lisibles", "métriques en colonnes, runs nommés, référence naïve incluse"],
+  ["Recherche systématique d'hyperparamètres", "grille ou tirages aléatoires, plages justifiées, graine fixée"],
+  ["Évaluation sur des pays jamais vus", "et le modèle final sauvegardé, rechargé sans erreur"],
+  ["Pipeline en étapes, configuration centralisée", "préparer, entraîner, évaluer ; un fichier YAML ou des paramètres"],
+  ["API avec /predict et /recommend, entrées validées", "Dockerfile et requirements.txt aux versions figées"],
+  ["Interface Streamlit qui appelle l'API", "aucune logique de machine learning dedans"],
+  ["Workflow CI/CD : tests, build, déploiement", "un échec arrête la suite et prévient ; aucun secret dans les fichiers"],
+  ["Rapport métier en PDF pour un non-spécialiste", "sans causalité ni rentabilité inventées, avec captures MLflow"],
+  ["Présentation de 15 minutes, chronométrée", "problème, solution, impact ; une slide d'architecture"],
+];
+const checked = store.get("p12-check", {});
+const cl = document.getElementById("check-list");
+function updateProg() {
+  const n = CHECK.filter((_, i) => checked[i]).length;
+  document.getElementById("prog").style.width = `${(100 * n / CHECK.length).toFixed(0)}%`;
+}
+CHECK.forEach(([t, s], i) => {
+  const l = document.createElement("label");
+  l.innerHTML = `<input type="checkbox" id="chk-${i}"${checked[i] ? " checked" : ""}><span>${esc(t)}<small>${esc(s)}</small></span>`;
+  l.querySelector("input").addEventListener("change", (e) => { checked[i] = e.target.checked; store.set("p12-check", checked); updateProg(); });
+  cl.appendChild(l);
+});
+updateProg();
+</script>
