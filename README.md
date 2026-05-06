@@ -10,7 +10,7 @@ une section **« aller plus loin »** sur les pratiques actuelles du métier.
 | Parcours | Projets traités |
 |---|---|
 | [Data Engineer](Data-Engineer/) | [P01 — Analysez les données de systèmes éducatifs](Data-Engineer/P01-analyse-systemes-educatifs/) · [P02 — Entraînez-vous avec SQL et créez votre BDD](Data-Engineer/P02-base-de-donnees-sql-immobilier/) |
-| Data Scientist — Machine Learning | à venir |
+| [Data Scientist — Machine Learning](Data-Scientist-Machine-Learning/) | [P12 — Concevez un système de recommandations pour une agriculture optimisée par les données](Data-Scientist-Machine-Learning/P12-recommandation-cultures-mlops/) |
 | [AI Engineer](AI-Engineer/) | [P01 — Requêtez des services IA](AI-Engineer/P01-segmentation-vetements-api/) |
 | Architecte Logiciel | à venir |
 | Expert DevOps | à venir |
