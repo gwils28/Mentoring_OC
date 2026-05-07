@@ -117,6 +117,7 @@ cd presentation && npm ci && npm run build
 - **Pas de prix** : aucune conclusion de rentabilité.
 - **Ridge retenu à un cheveu** (0,0065 d'écart moyen pour une erreur-type de 0,0068) ; avec d'autres plis, la forêt
   pourrait l'être, sans changer la conclusion sur la recommandation.
-- **CI/CD** : le workflow est écrit et ses étapes testées en local (tests, build, conteneur appelé, échecs simulés) ;
-  son premier run réel aura lieu au push. Le réentraînement n'est pas automatisé (choix délibéré, voir
+- **CI/CD** : premier run réel vert (lint, tests, image construite, conteneur appelé, publication sur GHCR) ; les
+  échecs ont été simulés en local avec les mêmes commandes. Le paquet GHCR est privé par défaut (à rendre public
+  pour un `docker pull` sans authentification). Le réentraînement n'est pas automatisé (choix délibéré, voir
   [docs/ci_cd.md](docs/ci_cd.md)).
